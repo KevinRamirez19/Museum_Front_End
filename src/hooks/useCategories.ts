@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import myApi from "../assets/lib/axios/myApi";
 
 interface Categories {
-  categoryId: number;
-  category: string;
+  idCategoria: number;
+  categoria: string;
   isDeleted: boolean;
 }
 
@@ -15,7 +15,7 @@ function useCategories() {
   }, []);
   const getCategories = async () => {
     try {
-      const categoriesRequest = await myApi.get<Categories[]>("/Category");
+      const categoriesRequest = await myApi.get<Categories[]>("/Categoria");
       setCategories(categoriesRequest.data);
     } catch (error) {
       console.log(error);

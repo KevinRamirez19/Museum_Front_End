@@ -11,7 +11,7 @@ function App() {
       <main>
         <Outlet />
       </main>
-      <footer>aaaaaaaaaaaaaaaaaa</footer>
+      <footer>Museo</footer>
     </section>
   );
 }

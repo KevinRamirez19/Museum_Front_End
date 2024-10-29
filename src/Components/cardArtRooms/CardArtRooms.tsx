@@ -12,7 +12,7 @@ function CardArtRooms({ name, description, image }: ArtRoom) {
   return (
     <article
       className={`${style.cardContainer}`}
-      onClick={() => setColor("blue")}
+      onClick={() => setColor("black")}
     >
       <img
         src={

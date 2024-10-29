@@ -3,103 +3,103 @@ import type { TableProps } from "antd";
 import useCategories from "../../../hooks/useCategories";
 
 interface CollectionDataType {
-  name: string;
-  category: "History" | "sculpture" | "photography";
-  year: number;
-  location: string;
-  conservationState: string;
+  nombre: string;
+  categoria: "Historia" | "Arqueologia" | "Biologia";
+  año: number;
+  locacion: string;
+  EstadodeConservacion: string;
 }
 
 function CollectionInventoryScreen() {
   const { categories } = useCategories();
   const tableKeys: TableProps<CollectionDataType>["columns"] = [
     {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
-      render: (text) => <a>{text}</a>,
+      title: "nombre",
+      dataIndex: "nombre",
+      key: "nombre",
+      
     },
     {
-      title: "category",
-      dataIndex: "category",
-      key: "category",
-      render: (text) => <a>{text}</a>,
+      title: "categoria",
+      dataIndex: "categoria",
+      key: "categoria",
+      
     },
     {
-      title: "year",
-      dataIndex: "year",
-      key: "year",
-      render: (text) => <a>{text}</a>,
+      title: "año",
+      dataIndex: "año",
+      key: "año",
+      
     },
     {
-      title: "location",
-      dataIndex: "location",
-      key: "location",
-      render: (text) => <a>{text}</a>,
+      title: "locacion",
+      dataIndex: "locacion",
+      key: "locacion",
+      
     },
     {
-      title: "conservationState",
-      dataIndex: "conservationState",
-      key: "conservationState",
-      render: (text) => <a>{text}</a>,
+      title: "EstadodeConservacion",
+      dataIndex: "EstadodeConservacion",
+      key: "EstadodeConservacion",
+      
     },
   ];
   const data: CollectionDataType[] = [
     {
-      name: "adsadas",
-      category: "History",
-      year: 1515,
-      location: "museo",
-      conservationState: "broken",
+      nombre: "Bogotazo",
+      categoria: "Historia",
+      año: 1515,
+      locacion: "museo",  
+      EstadodeConservacion: "Dañado",
     },
     {
-      name: "adsadas",
-      category: "History",
-      year: 1515,
-      location: "museo",
-      conservationState: "broken",
+      nombre: "Batalla de boyaca",
+      categoria: "Historia",
+      año: 1515,
+      locacion: "museo",
+      EstadodeConservacion: "Buen estado",
     },
     {
-      name: "adsadas",
-      category: "History",
-      year: 1515,
-      location: "museo",
-      conservationState: "broken",
+      nombre: "Guerra de los mil dias ",
+      categoria: "Historia",
+      año: 1515,
+      locacion: "museo",
+      EstadodeConservacion: "Regular",
     },
     {
-      name: "adsadas",
-      category: "History",
-      year: 1515,
-      location: "museo",
-      conservationState: "broken",
+      nombre: "Frente Nacional",
+      categoria: "Historia",
+      año: 1515,
+      locacion: "museo",
+      EstadodeConservacion: "Dañado",
     },
     {
-      name: "adsadas",
-      category: "History",
-      year: 1515,
-      location: "museo",
-      conservationState: "broken",
+      nombre: "La masacre de las bananeras",
+      categoria: "Historia",
+      año: 1515,
+      locacion: "museo",
+      EstadodeConservacion: "Buen estado",
     },
     {
-      name: "adsadas",
-      category: "History",
-      year: 1515,
-      location: "museo",
-      conservationState: "broken",
+      nombre: "La Patria Boba",
+      categoria: "Historia",
+      año: 1515,
+      locacion: "museo",
+      EstadodeConservacion: "Dañado",
     },
     {
-      name: "adsadas",
-      category: "History",
-      year: 1515,
-      location: "museo",
-      conservationState: "broken",
-    },
+      nombre: "El Conflicto Armado Interno",
+      categoria: "Arqueologia",
+      año: 1515,
+      locacion: "museo",
+      EstadodeConservacion: "Dañado",
+    },  
   ];
   return (
     <>
       <select name="" id="">
-        {categories.map((category) => (
-          <option key={category.categoryId}>{category.category}</option>
+        {categories.map((categoria) => (
+          <option key={categoria.idCategoria}>{categoria.categoria}</option>
         ))}
       </select>
       <Table columns={tableKeys} dataSource={data} />

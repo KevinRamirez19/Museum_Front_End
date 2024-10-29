@@ -5,20 +5,20 @@ type MenuItem = Required<MenuProps>["items"][number];
 
 function Navbar() {
   const itemsNavbar: MenuItem[] = [
-    { key: "/", label: <a href="/">home</a> },
+    { key: "/", label: <a href="/">Inicio</a> },
 
-    { key: "/Exhibition", label: <a href="/Exhibition">Exhibition</a> },
+    { key: "/Exhibition", label: <a href="/Exhibition">Exhibicion</a> },
     {
       key: "/collectInventory",
-      label: <a href="/collectInventory">Collections</a>,
+      label: <a href="/collectInventory">Coleccion</a>,
     },
     {
       key: "visitorManagement",
-      label: <a href="/visitorManagement">visitorManagement</a>,
+      label: <a href="/visitorManagement">Visitante de gestión</a>,
     },
-    { key: "reports", label: <a href="/reports">reports</a> },
-    { key: "settings", label: <a href="/settings">settings</a> },
-    { key: "login", label: <a href="/login">login</a> },
+    { key: "reports", label: <a href="/reports">reportes</a> },
+    { key: "settings", label: <a href="/settings">Ajustes</a> },
+    { key: "login", label: <a href="/login">Iniciar Sesion</a> },
   ];
 
   const handleOnClick: MenuProps["onClick"] = (e) => {
