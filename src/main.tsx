@@ -24,7 +24,7 @@ const router = createBrowserRouter(
           path="/collectInventory"
           element={<CollectionInventoryScreen />} />
           <Route
-          path="/report"
+          path="/reports"
           element={<ReportesScreen />} />
       </Route>
 
