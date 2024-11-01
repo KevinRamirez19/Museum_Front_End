@@ -1,7 +1,7 @@
-import { Table, TableProps, Select } from "antd";
+import React, { useState } from "react";
+import { Table, TableProps, Select, Button, Input } from "antd";
 import { BookOutlined, CalendarOutlined, CheckCircleOutlined } from "@ant-design/icons";
 import useCategories from "../../../hooks/useCategories";
-
 
 const { Option } = Select;
 
@@ -14,6 +14,38 @@ interface ExhibitionDataType {
 
 function ExhibitionsScreens() {
   const { categories } = useCategories();
+  const [data, setData] = useState<ExhibitionDataType[]>([
+    {
+      nombre: "Bogotazo",
+      fechaDeInicio: 2005,
+      fechaFinal: 2006,
+      estado: "Nuevo",
+    },
+    {
+      nombre: "Jim Green",
+      fechaDeInicio: 2010,
+      fechaFinal: 2012,
+      estado: "Antiguo",
+    },
+  ]);
+
+  // Estados para manejar el formulario
+  const [isCreating, setIsCreating] = useState<boolean>(false);
+  const [nombre, setNombre] = useState<string>("");
+  const [fechaDeInicio, setFechaDeInicio] = useState<number>(0);
+  const [fechaFinal, setFechaFinal] = useState<number>(0);
+  const [estado, setEstado] = useState<string>("");
+
+  const handleAddExhibition = () => {
+    const newExhibition: ExhibitionDataType = { nombre, fechaDeInicio, fechaFinal, estado };
+    setData([...data, newExhibition]);
+    setIsCreating(false); // Ocultar el formulario después de agregar
+    // Reiniciar los campos del formulario
+    setNombre("");
+    setFechaDeInicio(0);
+    setFechaFinal(0);
+    setEstado("");
+  };
 
   const tableColumns: TableProps<ExhibitionDataType>["columns"] = [
     {
@@ -75,21 +107,6 @@ function ExhibitionsScreens() {
     },
   ];
 
-  const data: ExhibitionDataType[] = [
-    {
-      nombre: "Bogotazo",
-      fechaDeInicio: 2005,
-      fechaFinal: 2006,
-      estado: "Nuevo",
-    },
-    {
-      nombre: "Jim Green",
-      fechaDeInicio: 2010,
-      fechaFinal: 2012,
-      estado: "Concluido",
-    },
-  ];
-
   return (
     <div style={{ padding: "20px", maxWidth: "1200px", margin: "auto" }}>
       <h2 style={{ textAlign: "center", marginBottom: "20px" }}>
@@ -105,6 +122,49 @@ function ExhibitionsScreens() {
           </Option>
         ))}
       </Select>
+      <Button
+        type="primary"
+        onClick={() => setIsCreating(!isCreating)}
+        style={{ marginBottom: "20px" }}
+      >
+        {isCreating ? "Cancelar" : "Crear Nueva Exhibición"}
+      </Button>
+
+      {isCreating && (
+        <div style={{ marginBottom: "20px" }}>
+          <h3>Agregar Nueva Exhibición</h3>
+          <Input 
+            placeholder="Nombre" 
+            value={nombre}
+            onChange={(e) => setNombre(e.target.value)} 
+          />
+          <Input 
+            placeholder="Fecha de Inicio" 
+            type="number" 
+            value={fechaDeInicio}
+            onChange={(e) => setFechaDeInicio(Number(e.target.value))} 
+          />
+          <Input 
+            placeholder="Fecha Final" 
+            type="number" 
+            value={fechaFinal}
+            onChange={(e) => setFechaFinal(Number(e.target.value))} 
+          />
+          <Input 
+            placeholder="Estado" 
+            value={estado}
+            onChange={(e) => setEstado(e.target.value)} 
+          />
+          <Button 
+            type="primary" 
+            onClick={handleAddExhibition}
+            style={{ marginTop: "10px" }}
+          >
+            Agregar
+          </Button>
+        </div>
+      )}
+
       <Table
         columns={tableColumns}
         dataSource={data}
