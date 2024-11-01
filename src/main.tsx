@@ -11,6 +11,7 @@ import ExhibitionsScreens from "./Components/screens/exhibitionScreen/Exhibition
 import CollectionInventoryScreen from "./Components/screens/collectionInventoryScreen/CollectionInventoryScreen.tsx";
 import App from "./App.tsx";
 import HomeScreen from "./Components/screens/homeScreen/HomeScreen.tsx";
+import ReportesScreen from "./Components/screens/reportesScreen/ReportesScreen.tsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -21,10 +22,15 @@ const router = createBrowserRouter(
         <Route path="/Exhibition" element={<ExhibitionsScreens />} />
         <Route
           path="/collectInventory"
-          element={<CollectionInventoryScreen />}
-        />
+          element={<CollectionInventoryScreen />} />
+          <Route
+          path="/report"
+          element={<ReportesScreen />} />
       </Route>
+
+      <Route/>
     </Route>
+    
   )
 );
 

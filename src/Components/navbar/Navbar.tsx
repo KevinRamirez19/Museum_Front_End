@@ -16,7 +16,10 @@ function Navbar() {
       key: "visitorManagement",
       label: <a href="/visitorManagement">Visitante de gestión</a>,
     },
-    { key: "reports", label: <a href="/reports">reportes</a> },
+    {
+      key: "reports",
+      label: <a href="/reports">Reportes</a>,
+    },
     { key: "settings", label: <a href="/settings">Ajustes</a> },
     { key: "login", label: <a href="/login">Iniciar Sesion</a> },
   ];
