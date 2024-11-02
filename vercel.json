@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/exhibition",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/collectInventory",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/reports",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
