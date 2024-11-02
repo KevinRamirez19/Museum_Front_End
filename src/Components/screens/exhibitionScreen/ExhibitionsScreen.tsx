@@ -1,5 +1,3 @@
-// ExhibitionsScreen.tsx
-
 import { useState } from "react";
 import { Table, TableProps, Select, Button, Input, Form, notification, Space, Modal } from "antd";
 import { BookOutlined, CalendarOutlined, CheckCircleOutlined, PlusCircleOutlined } from "@ant-design/icons";
@@ -68,10 +66,7 @@ function ExhibitionsScreens() {
       dataIndex: "estado",
       key: "estado",
       render: (text) => (
-        <span style={{
-          color: text === "Nuevo" ? "green" : "gray",
-          fontWeight: "500",
-        }}>
+        <span className={text === "Nuevo" ? "exhibition-status-new" : "exhibition-status-old"}>
           {text}
         </span>
       ),
@@ -103,7 +98,7 @@ function ExhibitionsScreens() {
       </Button>
 
       <Modal
-        title={<span style={{ color: "#1890ff" }}><PlusCircleOutlined /> Agregar Nueva Exhibición</span>}
+        title={<span style={{ color: "#4caf50" }}><PlusCircleOutlined /> Agregar Nueva Exhibición</span>}
         visible={isModalVisible}
         onCancel={() => setIsModalVisible(false)}
         footer={null}

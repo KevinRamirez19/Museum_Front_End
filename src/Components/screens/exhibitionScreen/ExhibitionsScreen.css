@@ -1,83 +1,99 @@
-/* ExhibitionsScreen.css */
-
-/* Estilo general para la pantalla */
+/* Contenedor principal para pantalla completa */
 .exhibitions-container {
+  position: relative;
   padding: 20px;
-  max-width: 1200px;
-  margin: auto;
-  background-color: #f0f2f5;
-  border-radius: 8px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  font-family: Arial, sans-serif;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  background-image: url('https://www.museonacional.gov.co/exposiciones/Documents/IMG_9782.jpg');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
 }
 
-/* Título principal */
+/* Overlay para mejorar legibilidad */
+.exhibitions-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 0;
+}
+
+.exhibitions-container > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Título */
 .exhibitions-title {
-  text-align: center;
-  font-size: 24px;
-  color: #1890ff; /* Color de título más uniforme */
+  font-size: 28px;
+  color: #ffffff;
   margin-bottom: 20px;
+  text-align: center;
 }
 
 /* Select de categoría */
 .category-select {
   width: 100%;
+  max-width: 600px;
   margin-bottom: 20px;
+  background: rgba(255, 255, 255, 0.8); /* Fondo más claro */
+  color: black; /* Cambiar a negro para mejor contraste */
+  border: 1px solid #4caf50; /* Borde verde */
 }
 
-/* Botón para crear una nueva exhibición */
+/* Botón para agregar exhibición */
 .add-exhibition-button {
   width: 100%;
+  max-width: 600px;
+  background-color: #4caf50; /* Cambiar a un verde vibrante */
+  border: none;
+  color: white;
   margin-bottom: 20px;
-  background-color: #52c41a;
-  border-color: #52c41a;
-}
-
-/* Estilo para el modal */
-.exhibition-modal {
-  top: 20px;
-}
-
-/* Contenido del formulario */
-.ant-form-item {
-  margin-bottom: 15px !important;
-}
-
-.ant-input {
   border-radius: 5px;
-}
-
-/* Estilos de la tabla */
-.exhibition-table {
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  width: 100%;
-}
-
-.bold-text {
   font-weight: bold;
+  font-size: 16px;
 }
 
+/* Tabla de estilo modernizado */
+.exhibition-table {
+  width: 100%; /* Cambiar a 100% para que ocupe más espacio */
+  max-width: 900px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: white; /* Cambiar el fondo a blanco */
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3); /* Suavizar la sombra */
+  color: black; /* Cambiar el texto a negro para mayor legibilidad */
+}
+
+/* Encabezado de la tabla */
 .ant-table-thead > tr > th {
-  background-color: #fafafa;
-  font-weight: 600;
-  color: #595959;
+  background-color: #4caf50; /* Cambiar el color de fondo a un verde vibrante */
+  font-weight: bold;
+  color: white; /* Cambiar el color del texto a blanco */
+  text-align: center;
+  padding: 16px; /* Aumentar el padding */
 }
 
-/* Estado */
-.exhibition-status {
-  font-weight: 500;
+/* Celdas de la tabla */
+.ant-table-tbody > tr > td {
+  text-align: center;
+  color: black; /* Cambiar el color del texto a negro */
+  background-color: rgba(240, 240, 240, 0.8); /* Usar un gris claro y semi-transparente */
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* Cambiar el color del borde a un gris suave */
+  padding: 12px; /* Aumentar el padding */
 }
 
-/* Hover efecto en tarjetas */
-.card {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 15px;
-  margin: 10px;
-  transition: transform 0.2s;
-}
-
-.card:hover {
-  transform: translateY(-5px);
+/* Personalización para los estados */
+.exhibition-status-new {
+  color: #4caf50; /* Verde para el estado nuevo */
+  font-weight: bold;
 }
