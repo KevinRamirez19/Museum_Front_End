@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPalette, faLandmark, faFlask, faLeaf } from "@fortawesome/free-solid-svg-icons";
 import './HomeScreen.css';
-
 interface ArtRoom {
   nombre: string;
   descripcion: string;

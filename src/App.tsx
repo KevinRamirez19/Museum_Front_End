@@ -1,10 +1,9 @@
 import "./App.css";
-import Navbar from "./Components/navbar/Navbar";
 import { Outlet } from "react-router-dom";
 import { MoonFilled, UserOutlined, PoweroffOutlined } from "@ant-design/icons";
+import Navbar from "./Components/navbar/Navbar";
 
 function App() {
- 
   return (
     <section className="layout">
       <header>
@@ -15,7 +14,6 @@ function App() {
       </main>
       <footer>Museo</footer>
 
-      {/* Contenedor de íconos */}
       <div className="icon-container">
         <MoonFilled style={{ fontSize: "25px" }} />
         <UserOutlined style={{ fontSize: "25px" }} />
