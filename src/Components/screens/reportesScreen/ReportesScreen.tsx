@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Table } from "antd";
 import type { TableProps } from "antd";
 import useCategories from "../../../hooks/useCategories";
@@ -21,21 +22,27 @@ interface CollectionDataType {
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
-function CollectionInventoryScreen() {
+function ReportesScreen() {
   const { categories } = useCategories();
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   const data: CollectionDataType[] = [
     { nombre: "Bogotazo", categoria: "Historia", año: 1515, locacion: "museo", EstadodeConservacion: "Dañado" },
-    { nombre: "Batalla de boyaca", categoria: "Historia", año: 1515, locacion: "museo", EstadodeConservacion: "Buen estado" },
-    { nombre: "Guerra de los mil dias", categoria: "Historia", año: 1515, locacion: "museo", EstadodeConservacion: "Regular" },
-    { nombre: "Frente Nacional", categoria: "Historia", año: 1515, locacion: "museo", EstadodeConservacion: "Dañado" },
-    { nombre: "La masacre de las bananeras", categoria: "Historia", año: 1515, locacion: "museo", EstadodeConservacion: "Buen estado" },
-    { nombre: "La Patria Boba", categoria: "Historia", año: 1515, locacion: "museo", EstadodeConservacion: "Dañado" },
-    { nombre: "El Conflicto Armado Interno", categoria: "Arqueologia", año: 1515, locacion: "museo", EstadodeConservacion: "Dañado" },
+    { nombre: "Batalla de Boyacá", categoria: "Historia", año: 1819, locacion: "museo", EstadodeConservacion: "Buen estado" },
+    { nombre: "Guerra de los mil días", categoria: "Historia", año: 1899, locacion: "museo", EstadodeConservacion: "Regular" },
+    { nombre: "Frente Nacional", categoria: "Historia", año: 1958, locacion: "museo", EstadodeConservacion: "Dañado" },
+    { nombre: "La masacre de las bananeras", categoria: "Historia", año: 1928, locacion: "museo", EstadodeConservacion: "Buen estado" },
+    { nombre: "La Patria Boba", categoria: "Historia", año: 1810, locacion: "museo", EstadodeConservacion: "Dañado" },
+    { nombre: "El Conflicto Armado Interno", categoria: "Arqueologia", año: 1960, locacion: "museo", EstadodeConservacion: "Dañado" },
   ];
 
+  // Filtrar datos por categoría seleccionada
+  const filteredData = selectedCategory
+    ? data.filter(item => item.categoria === selectedCategory)
+    : data;
+
   // Crear datos para la gráfica de pastel
-  const conservationStatusCounts = data.reduce((acc, item) => {
+  const conservationStatusCounts = filteredData.reduce((acc, item) => {
     acc[item.EstadodeConservacion] = (acc[item.EstadodeConservacion] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
@@ -46,24 +53,32 @@ function CollectionInventoryScreen() {
   }));
 
   const tableKeys: TableProps<CollectionDataType>["columns"] = [
-    { title: "nombre", dataIndex: "nombre", key: "nombre" },
-    { title: "categoria", dataIndex: "categoria", key: "categoria" },
-    { title: "año", dataIndex: "año", key: "año" },
-    { title: "locacion", dataIndex: "locacion", key: "locacion" },
-    { title: "EstadodeConservacion", dataIndex: "EstadodeConservacion", key: "EstadodeConservacion" },
+    { title: "Nombre", dataIndex: "nombre", key: "nombre" },
+    { title: "Categoría", dataIndex: "categoria", key: "categoria" },
+    { title: "Año", dataIndex: "año", key: "año" },
+    { title: "Locación", dataIndex: "locacion", key: "locacion" },
+    { title: "Estado de Conservación", dataIndex: "EstadodeConservacion", key: "EstadodeConservacion" },
   ];
+
+  const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCategory(event.target.value);
+  };
 
   return (
     <>
-      <h1>Reporte de estado de las colecciones</h1> {/* Agrega este encabezado */}
-      
-      <select name="" id="">
+      <h1>Reporte de estado de las colecciones</h1>
+
+      <label htmlFor="categorySelect">Selecciona una categoría:</label>
+      <select id="categorySelect" onChange={handleCategoryChange} value={selectedCategory}>
+        <option value="">Todas</option>
         {categories.map((categoria) => (
-          <option key={categoria.idCategoria}>{categoria.categoria}</option>
+          <option key={categoria.idCategoria} value={categoria.categoria}>
+            {categoria.categoria}
+          </option>
         ))}
       </select>
 
-      <Table columns={tableKeys} dataSource={data} />
+      <Table columns={tableKeys} dataSource={filteredData} rowKey="nombre" />
 
       <h3>Estado de Conservación</h3>
       <ResponsiveContainer width="100%" height={300}>
@@ -78,7 +93,7 @@ function CollectionInventoryScreen() {
             fill="#8884d8"
             label
           >
-            {pieChartData.map((entry, index) => (
+            {pieChartData.map((_, index) => (  // Solo usar el índice aquí
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
             ))}
           </Pie>
@@ -90,4 +105,4 @@ function CollectionInventoryScreen() {
   );
 }
 
-export default CollectionInventoryScreen;
+export default ReportesScreen;
