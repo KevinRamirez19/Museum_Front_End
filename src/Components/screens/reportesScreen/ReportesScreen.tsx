@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Table } from "antd";
 import type { TableProps } from "antd";
 import useCategories from "../../../hooks/useCategories";
-import '../reportesScreen/reportesScreen.css';
+import "./ReportesScreen.css"
 import {
   PieChart,
   Pie,
