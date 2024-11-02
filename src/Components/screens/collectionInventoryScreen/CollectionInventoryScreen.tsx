@@ -1,7 +1,6 @@
 import { Table } from "antd";
 import type { TableProps } from "antd";
 import useCategories from "../../../hooks/useCategories";
-import React from "react";
 
 interface CollectionDataType {
   nombre: string;

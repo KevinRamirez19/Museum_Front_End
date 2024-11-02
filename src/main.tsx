@@ -11,19 +11,17 @@ import ExhibitionsScreens from "./Components/screens/exhibitionScreen/Exhibition
 import CollectionInventoryScreen from "./Components/screens/collectionInventoryScreen/CollectionInventoryScreen.tsx";
 import App from "./App.tsx";
 import HomeScreen from "./Components/screens/homeScreen/HomeScreen.tsx";
+import ReportesScreen from "./Components/screens/reportesScreen/ReportesScreen.tsx";
+import LoginScreen from "./Components/screens/loginScreen/LoginScreen.tsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route>
-      <Route path="/" element={<App />}>
-        <Route index path="/" element={<HomeScreen />} />
-
-        <Route path="/Exhibition" element={<ExhibitionsScreens />} />
-        <Route
-          path="/collectInventory"
-          element={<CollectionInventoryScreen />}
-        />
-      </Route>
+    <Route path="/" element={<App />}>
+      <Route index element={<HomeScreen />} />
+      <Route path="/exhibition" element={<ExhibitionsScreens />} />
+      <Route path="/collectInventory" element={<CollectionInventoryScreen />} />
+      <Route path="/reports" element={<ReportesScreen />} />
+      <Route path="/login" element={<LoginScreen />} />
     </Route>
   )
 );
