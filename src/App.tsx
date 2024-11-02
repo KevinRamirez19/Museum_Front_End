@@ -12,7 +12,7 @@ function App() {
       <main>
         <Outlet />
       </main>
-      <footer> Museo Nacional </footer>
+      <footer>Museo Nacional</footer>
 
       <div className="icon-container">
         <MoonFilled style={{ fontSize: "25px" }} />

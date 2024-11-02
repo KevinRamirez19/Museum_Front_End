@@ -1,19 +1,18 @@
-// LoginScreen.tsx
 import React, { useState } from 'react';
-import { UserOutlined, MailOutlined, LockOutlined } from '@ant-design/icons';
+import { UserOutlined, MailOutlined, LockOutlined } from '@ant-design/icons'; // Importa íconos de Ant Design
 import './LoginScreen.css';
 
-interface LoginScreenProps {
-  toggleScreen: () => void;
-}
-
-const LoginScreen: React.FC<LoginScreenProps> = ({ toggleScreen }) => {
+const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Iniciar sesión:', { email, password });
+  };
+
+  const handleRegister = () => {
+    console.log('Ir a Registrarse');
   };
 
   return (
@@ -24,7 +23,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ toggleScreen }) => {
         </h2>
         <p className="subtitle">Inicia sesión en tu cuenta</p>
         <form onSubmit={handleLogin}>
-          {/* Campos de entrada */}
           <div className="input-group">
             <label htmlFor="email">
               <MailOutlined className="icon" /> Correo Electrónico
@@ -52,7 +50,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ toggleScreen }) => {
           <button type="submit" className="login-button">Ingresar</button>
         </form>
         <p className="register-text">¿No tienes cuenta?</p>
-        <button onClick={toggleScreen} className="register-button">
+        <button onClick={handleRegister} className="register-button">
           Registrarse
         </button>
       </div>
@@ -60,4 +58,4 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ toggleScreen }) => {
   );
 };
 
-export default LoginScreen;
+export default LoginScreen;0
