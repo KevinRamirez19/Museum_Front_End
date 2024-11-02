@@ -1,4 +1,4 @@
-import React from "react";
+
 import { Table } from "antd";
 import type { TableProps } from "antd";
 import useCategories from "../../../hooks/useCategories";
@@ -85,7 +85,7 @@ function CollectionInventoryScreen() {
             fill="#8884d8"
             label
           >
-            {pieChartData.map((entry, index) => (
+            {pieChartData.map((_, index) => (
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
             ))}
           </Pie>
@@ -108,7 +108,7 @@ function CollectionInventoryScreen() {
             fill="#8884d8"
             label
           >
-            {genderData.map((entry, index) => (
+            {genderData.map((_, index) => (
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
             ))}
           </Pie>

@@ -155,3 +155,70 @@
 .art-room-title svg {
   color: #4c8bf5; /* Color del icono */
 }
+/* Contenedor de resumen de la sala */
+.art-room-summary {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: left;
+  max-width: 600px;
+}
+
+/* Botón de cerrar */
+.close-summary {
+  background-color: #ffd700;
+  color: #333;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.close-summary:hover {
+  background-color: #e6b800;
+}
+  /* Fondo de la ventana emergente */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Contenido de la ventana emergente */
+.modal-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 80%;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+/* Botón de cerrar la ventana emergente */
+.close-modal {
+  background-color: #ffd700;
+  color: #333;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: background-color 0.3s ease;
+}
+
+.close-modal:hover {
+  background-color: #e6b800;
+}
