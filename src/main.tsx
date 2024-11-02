@@ -11,7 +11,7 @@ import ExhibitionsScreens from "./Components/screens/exhibitionScreen/Exhibition
 import CollectionInventoryScreen from "./Components/screens/collectionInventoryScreen/CollectionInventoryScreen.tsx";
 import App from "./App.tsx";
 import HomeScreen from "./Components/screens/homeScreen/HomeScreen.tsx";
-import ReportesScreen from './Components/screens/reportesScreen/ReportesScreen';
+import ReportesScreen from './Components/screens/reportesScreen/reportesScreen.tsx';
 
 
 const router = createBrowserRouter(
