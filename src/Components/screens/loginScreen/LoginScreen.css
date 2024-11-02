@@ -2,8 +2,7 @@
 body {
   margin: 0;
   padding: 0;
-  background: 
- url('https://upload.wikimedia.org/wikipedia/commons/1/14/Entrada_Principal_del_Museo_Nacional_de_Colombia.jpg') no-repeat center center/cover;
+  
   font-family: Arial, sans-serif;
   display: flex;
   justify-content: center;

@@ -2,20 +2,21 @@
   width: 100%;
   min-height: 100vh;
 }
-  .layout {
-    display: flex;
-    flex-direction: column;
-    height: 100vh; /* Asegúrate de que tu layout ocupa todo el alto de la ventana */
-  }
-  
-  header {
-    height: 60px; 
-    background: #f0f0f0; /* Fondo gris claro para visualizar mejor */
-  }
-  
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Cambiado a min-height para permitir que crezca */
+}
+
+header {
+  height: 60px; 
+  background: #f0f0f0; /* Fondo gris claro para visualizar mejor */
+}
 
 main {
-  flex: 1;
+  flex: 1; /* Permite que main ocupe el espacio restante */
+  overflow-y: auto; /* Permite el desplazamiento vertical si el contenido excede la altura */
 }
 
 footer {

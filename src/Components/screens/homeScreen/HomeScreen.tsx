@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPalette, faLandmark, faFlask, faLeaf } from "@fortawesome/free-solid-svg-icons";
 import './HomeScreen.css';
+
 interface ArtRoom {
   nombre: string;
   descripcion: string;
   resumen: string;
-  icon: any; // Si tienes un tipo específico para el ícono, cámbialo
+  icon: any; // Ajusta el tipo si tienes un tipo específico para el ícono
   image?: string;
 }
 
