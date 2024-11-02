@@ -1,7 +1,8 @@
-import  { useState } from "react";
-import { Table, TableProps, Select, Button, Input } from "antd";
-import { BookOutlined, CalendarOutlined, CheckCircleOutlined } from "@ant-design/icons";
+import { useState } from "react";
+import { Table, TableProps, Select, Button, Input, Form, notification, Space, Modal } from "antd";
+import { BookOutlined, CalendarOutlined, CheckCircleOutlined, PlusCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import useCategories from "../../../hooks/useCategories";
+import "./ExhibitionsScreen.css";
 
 const { Option } = Select;
 
@@ -29,22 +30,23 @@ function ExhibitionsScreens() {
     },
   ]);
 
-  // Estados para manejar el formulario
-  const [isCreating, setIsCreating] = useState<boolean>(false);
-  const [nombre, setNombre] = useState<string>("");
-  const [fechaDeInicio, setFechaDeInicio] = useState<number>(0);
-  const [fechaFinal, setFechaFinal] = useState<number>(0);
-  const [estado, setEstado] = useState<string>("");
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [form] = Form.useForm();
 
-  const handleAddExhibition = () => {
-    const newExhibition: ExhibitionDataType = { nombre, fechaDeInicio, fechaFinal, estado };
-    setData([...data, newExhibition]);
-    setIsCreating(false); // Ocultar el formulario después de agregar
-    // Reiniciar los campos del formulario
-    setNombre("");
-    setFechaDeInicio(0);
-    setFechaFinal(0);
-    setEstado("");
+  const handleAddExhibition = async () => {
+    try {
+      const values = await form.validateFields();
+      const newExhibition: ExhibitionDataType = { ...values };
+      setData([...data, newExhibition]);
+      setIsModalVisible(false);
+      form.resetFields();
+      notification.success({
+        message: 'Exhibición Agregada',
+        description: `Se ha agregado la exhibición "${newExhibition.nombre}".`,
+      });
+    } catch (errorInfo) {
+      console.log('Failed:', errorInfo);
+    }
   };
 
   const tableColumns: TableProps<ExhibitionDataType>["columns"] = [
@@ -108,13 +110,14 @@ function ExhibitionsScreens() {
   ];
 
   return (
-    <div style={{ padding: "20px", maxWidth: "1200px", margin: "auto" }}>
-      <h2 style={{ textAlign: "center", marginBottom: "20px" }}>
+    <div style={{ padding: "20px", maxWidth: "1200px", margin: "auto", backgroundColor: "#f0f2f5" }}>
+      <h2 style={{ textAlign: "center", marginBottom: "20px", color: "#1890ff" }}>
         Exhibiciones Disponibles
       </h2>
       <Select
         placeholder="Selecciona una categoría"
         style={{ width: "100%", marginBottom: "20px" }}
+        dropdownStyle={{ backgroundColor: "#ffffff" }}
       >
         {categories.map((categoria) => (
           <Option key={categoria.idCategoria} value={categoria.idCategoria}>
@@ -124,46 +127,59 @@ function ExhibitionsScreens() {
       </Select>
       <Button
         type="primary"
-        onClick={() => setIsCreating(!isCreating)}
-        style={{ marginBottom: "20px" }}
+        onClick={() => setIsModalVisible(true)}
+        style={{ marginBottom: "20px", backgroundColor: "#52c41a", borderColor: "#52c41a" }}
+        icon={<PlusCircleOutlined />}
       >
-        {isCreating ? "Cancelar" : "Crear Nueva Exhibición"}
+        Crear Nueva Exhibición
       </Button>
 
-      {isCreating && (
-        <div style={{ marginBottom: "20px" }}>
-          <h3>Agregar Nueva Exhibición</h3>
-          <Input 
-            placeholder="Nombre" 
-            value={nombre}
-            onChange={(e) => setNombre(e.target.value)} 
-          />
-          <Input 
-            placeholder="Fecha de Inicio" 
-            type="number" 
-            value={fechaDeInicio}
-            onChange={(e) => setFechaDeInicio(Number(e.target.value))} 
-          />
-          <Input 
-            placeholder="Fecha Final" 
-            type="number" 
-            value={fechaFinal}
-            onChange={(e) => setFechaFinal(Number(e.target.value))} 
-          />
-          <Input 
-            placeholder="Estado" 
-            value={estado}
-            onChange={(e) => setEstado(e.target.value)} 
-          />
-          <Button 
-            type="primary" 
-            onClick={handleAddExhibition}
-            style={{ marginTop: "10px" }}
+      <Modal
+        title={<span style={{ color: "#1890ff" }}><PlusCircleOutlined /> Agregar Nueva Exhibición</span>}
+        visible={isModalVisible}
+        onCancel={() => setIsModalVisible(false)}
+        footer={null}
+        style={{ top: 20 }}
+      >
+        <Form form={form} layout="vertical">
+          <Form.Item
+            label="Nombre"
+            name="nombre"
+            rules={[{ required: true, message: 'Por favor ingresa el nombre de la exhibición' }]}
           >
-            Agregar
-          </Button>
-        </div>
-      )}
+            <Input placeholder="Nombre" style={{ borderRadius: "8px" }} />
+          </Form.Item>
+          <Form.Item
+            label="Fecha de Inicio"
+            name="fechaDeInicio"
+            rules={[{ required: true, message: 'Por favor ingresa la fecha de inicio' }]}
+          >
+            <Input placeholder="Fecha de Inicio" type="number" style={{ borderRadius: "8px" }} />
+          </Form.Item>
+          <Form.Item
+            label="Fecha Final"
+            name="fechaFinal"
+            rules={[{ required: true, message: 'Por favor ingresa la fecha final' }]}
+          >
+            <Input placeholder="Fecha Final" type="number" style={{ borderRadius: "8px" }} />
+          </Form.Item>
+          <Form.Item
+            label="Estado"
+            name="estado"
+            rules={[{ required: true, message: 'Por favor ingresa el estado' }]}
+          >
+            <Input placeholder="Estado" style={{ borderRadius: "8px" }} />
+          </Form.Item>
+          <Space>
+            <Button type="primary" onClick={handleAddExhibition} style={{ backgroundColor: "#52c41a", borderColor: "#52c41a" }}>
+              Agregar
+            </Button>
+            <Button onClick={() => setIsModalVisible(false)} style={{ backgroundColor: "#ff4d4f", borderColor: "#ff4d4f" }} icon={<CloseCircleOutlined />}>
+              Cancelar
+            </Button>
+          </Space>
+        </Form>
+      </Modal>
 
       <Table
         columns={tableColumns}
