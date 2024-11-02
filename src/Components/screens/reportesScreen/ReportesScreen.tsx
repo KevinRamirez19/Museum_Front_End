@@ -2,7 +2,7 @@ import React from "react";
 import { Table } from "antd";
 import type { TableProps } from "antd";
 import useCategories from "../../../hooks/useCategories";
-import '../reportesScreen/reportesScreen.css';
+import useGenderData from "../../../hooks/useGender"; // Importamos el hook
 import {
   PieChart,
   Pie,
@@ -24,7 +24,9 @@ const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
 function CollectionInventoryScreen() {
   const { categories } = useCategories();
+  const genderData = useGenderData(); // Usamos el hook para obtener los datos de género
 
+  // Datos de ejemplo para la primera gráfica de "Estado de Conservación"
   const data: CollectionDataType[] = [
     { nombre: "Bogotazo", categoria: "Historia", año: 1515, locacion: "museo", EstadodeConservacion: "Dañado" },
     { nombre: "Batalla de boyaca", categoria: "Historia", año: 1515, locacion: "museo", EstadodeConservacion: "Buen estado" },
@@ -35,7 +37,7 @@ function CollectionInventoryScreen() {
     { nombre: "El Conflicto Armado Interno", categoria: "Arqueologia", año: 1515, locacion: "museo", EstadodeConservacion: "Dañado" },
   ];
 
-  // Crear datos para la gráfica de pastel
+  // Crear datos para la gráfica de pastel "Estado de Conservación"
   const conservationStatusCounts = data.reduce((acc, item) => {
     acc[item.EstadodeConservacion] = (acc[item.EstadodeConservacion] || 0) + 1;
     return acc;
@@ -46,26 +48,30 @@ function CollectionInventoryScreen() {
     value: conservationStatusCounts[status],
   }));
 
+  // Configuración de columnas para la tabla
   const tableKeys: TableProps<CollectionDataType>["columns"] = [
-    { title: "nombre", dataIndex: "nombre", key: "nombre" },
-    { title: "categoria", dataIndex: "categoria", key: "categoria" },
-    { title: "año", dataIndex: "año", key: "año" },
-    { title: "locacion", dataIndex: "locacion", key: "locacion" },
-    { title: "EstadodeConservacion", dataIndex: "EstadodeConservacion", key: "EstadodeConservacion" },
+    { title: "Nombre", dataIndex: "nombre", key: "nombre" },
+    { title: "Categoría", dataIndex: "categoria", key: "categoria" },
+    { title: "Año", dataIndex: "año", key: "año" },
+    { title: "Locación", dataIndex: "locacion", key: "locacion" },
+    { title: "Estado de Conservación", dataIndex: "EstadodeConservacion", key: "EstadodeConservacion" },
   ];
 
   return (
     <>
-      <h1>Reporte de estado de las colecciones</h1> {/* Agrega este encabezado */}
-      
-      <select name="" id="">
+      <h1>Reporte del estado de las colecciones</h1>
+
+      {/* Dropdown de categorías */}
+      <select name="categorias" id="categorias">
         {categories.map((categoria) => (
           <option key={categoria.idCategoria}>{categoria.categoria}</option>
         ))}
       </select>
 
+      {/* Tabla de inventario */}
       <Table columns={tableKeys} dataSource={data} />
 
+      {/* Gráfica de pastel para Estado de Conservación */}
       <h3>Estado de Conservación</h3>
       <ResponsiveContainer width="100%" height={300}>
         <PieChart>
@@ -80,6 +86,29 @@ function CollectionInventoryScreen() {
             label
           >
             {pieChartData.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+            ))}
+          </Pie>
+          <Tooltip />
+          <Legend />
+        </PieChart>
+      </ResponsiveContainer>
+
+      {/* Gráfica de pastel para División por Géneros */}
+      <h3>División por Géneros</h3>
+      <ResponsiveContainer width="100%" height={300}>
+        <PieChart>
+          <Pie
+            data={genderData} // Usamos los datos de género aquí
+            dataKey="value"
+            nameKey="name"
+            cx="50%"
+            cy="50%"
+            outerRadius={100}
+            fill="#8884d8"
+            label
+          >
+            {genderData.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
             ))}
           </Pie>
