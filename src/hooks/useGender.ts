@@ -15,7 +15,7 @@ function useGenderData() {
         const response = await axios.get("https://nationalmuseum2.somee.com/api/Gender");
         const users = response.data;
 
-        const genderCounts = users.reduce((acc, user) => {
+        const genderCounts = users.reduce((acc: { [x: string]: any; }, user: { gender: any; }) => {
           const genderName = user.gender;
           acc[genderName] = (acc[genderName] || 0) + 1;
           return acc;

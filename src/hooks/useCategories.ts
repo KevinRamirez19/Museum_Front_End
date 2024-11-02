@@ -9,19 +9,28 @@ interface Categories {
 
 function useCategories() {
   const [categories, setCategories] = useState<Categories[]>([]);
-  useEffect(() => {
-    getCategories();
-    return () => {};
-  }, []);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
   const getCategories = async () => {
+    setLoading(true);
+    setError(null);
     try {
-      const categoriesRequest = await myApi.get<Categories[]>("/Categoria");
-      setCategories(categoriesRequest.data);
-    } catch (error) {
-      console.log(error);
+      const response = await myApi.get<Categories[]>("");
+      setCategories(response.data);
+    } catch (err) {
+      setError("Error fetching categories.");
+      console.error("Error:", err);
+    } finally {
+      setLoading(false);
     }
   };
-  return { categories };
+
+  useEffect(() => {
+    getCategories();
+  }, []);
+
+  return { categories, loading, error };
 }
 
 export default useCategories;
