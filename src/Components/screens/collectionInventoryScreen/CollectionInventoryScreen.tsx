@@ -2,7 +2,6 @@ import { Table } from "antd";
 import type { TableProps } from "antd";
 import useCategories from "../../../hooks/useCategories";
 
-
 interface CollectionDataType {
   nombre: string;
   categoria: "Historia" | "Arqueologia" | "Biologia";
