@@ -8,7 +8,6 @@
   background: 
    url("https://img.freepik.com/foto-gratis/fondo-cuadricula-digital-futurista-azul-oscuro-abstracto_53876-104051.jpg?semt=ais_hybrid") no-repeat center center fixed;
   background-size:cover; /* Hace que la imagen cubra toda el área */
-  background-attachment:fixed; /* Fija la imagen al hacer scroll */
   animation: fadeInBackground 2s ease-in-out;
 }
 
