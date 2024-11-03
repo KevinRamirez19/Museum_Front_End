@@ -53,13 +53,13 @@ const GameStateReportScreen = () => {
           <Legend />
         </PieChart>
       </ResponsiveContainer>
-      
+
       <h3>Progreso Acumulativo del Juego</h3>
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={lineChartData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" label={{ value: "Etapas", position: "insideBottom", offset: -5 }} />
-          <YAxis label={{ value: "Conteo de Ocurrencias", angle: -90, position: "insideLeft" }} />
+          <YAxis label={{ value: "Logros obtenidos por usuarios", angle: -90, position: "insideLeft" }} />
           <Tooltip formatter={(value) => [`${value} veces`, "Conteo"]} />
           <Line type="monotone" dataKey="value" stroke="#82ca9d" activeDot={{ r: 8 }} />
         </LineChart>
