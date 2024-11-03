@@ -1,4 +1,4 @@
-/* Contenedor principal del reporte */
+/* Contenedor principal del reporte 
 #game-state-report-container {
   max-width: 600px;
   margin: 0 auto;
@@ -6,7 +6,7 @@
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
+}*/
 
 /* Estilo del título */
 #game-state-report-container h3 {
