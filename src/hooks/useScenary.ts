@@ -29,7 +29,7 @@ const useScenaries = () => {
   // Eliminar un escenario
   const deleteScenary = async (scenaryId: number) => {
     try {
-      await axios.delete('https://nationalmuseum2.somee.com/api/Scenary/${scenaryId}');
+      await axios.delete(`https://nationalmuseum2.somee.com/api/Scenary/${scenaryId}`);
       setScenaries((prevScenaries) => prevScenaries.filter((scenary) => scenary.scenaryId !== scenaryId));
       return true;
     } catch (error) {

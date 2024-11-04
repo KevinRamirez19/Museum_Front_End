@@ -1,77 +1,91 @@
-/* Contenedor principal del reporte 
-#game-state-report-container {
-  max-width: 600px;
-  margin: 0 auto;
-  background-color: #f9f9f9;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}*/
+/* reportesScreen.css */
 
-/* Estilo del título */
-#game-state-report-container h3 {
-  font-size: 1.8em;
+/* Estilo general del contenedor */
+.GameStateReportScreen {
+  padding: 20px;
+  background-color: #f5f5f5;
+  font-family: Arial, sans-serif;
+}
+
+/* Estilo para los títulos */
+h3 {
+  color: #333;
+  font-size: 1.5em;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+/* Estilos para los gráficos */
+.ResponsiveContainer {
+  margin: 20px 0;
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos de la tabla */
+.ant-table {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ant-table-thead > tr > th {
+  background-color: #fafafa;
+  font-weight: bold;
   color: #333;
   text-align: center;
-  margin-bottom: 20px;
-  font-family: Arial, sans-serif;
-  font-weight: bold;
 }
 
-/* Estilo del contenedor de la gráfica */
-.recharts-responsive-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.ant-table-tbody > tr > td {
+  text-align: center;
+  color: #555;
 }
 
-/* Mejora de estilo para la gráfica de pastel */
+/* Buscador de escenarios */
+.ant-input {
+  border-radius: 8px;
+  border: 1px solid #d9d9d9;
+}
+
+.ant-input:focus {
+  border-color: #40a9ff;
+  box-shadow: 0 0 5px rgba(24, 144, 255, 0.2);
+}
+
+/* Botón de eliminar */
+.ant-btn-link {
+  color: #ff4d4f;
+}
+
+.ant-btn-link:hover {
+  color: #d9363e;
+}
+
+/* Popconfirm */
+.ant-popover-inner-content {
+  font-size: 0.9em;
+  color: #333;
+}
+
+/* Colores para la gráfica de pastel */
 .recharts-pie .recharts-sector {
   transition: all 0.3s ease;
 }
 
 .recharts-pie .recharts-sector:hover {
   transform: scale(1.05);
-  cursor: pointer;
 }
 
-/* Estilo para la leyenda y el tooltip */
-.recharts-default-legend {
-  font-size: 0.9em;
-  font-family: Arial, sans-serif;
-  color: #555;
-}
-
+/* Tooltip */
 .recharts-tooltip-wrapper {
-  background-color: rgba(50, 50, 50, 0.9);
-  color: white;
   font-size: 0.85em;
-  border-radius: 8px;
-  padding: 5px 10px;
-  font-family: Arial, sans-serif;
+  color: #333;
 }
 
-/* Colores para las celdas del gráfico de pastel */
-.recharts-cell:nth-child(1) {
-  fill: #0088FE;
-}
-
-.recharts-cell:nth-child(2) {
-  fill: #FF8042;
-}
-
-/* Animación suave en la entrada de la gráfica */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-#game-state-report-container .recharts-wrapper {
-  animation: fadeInUp 0.6s ease-in-out;
+/* Ajustes para la tabla de escenarios */
+.ant-table-pagination.ant-pagination {
+  margin-top: 20px;
+  text-align: center;
 }
