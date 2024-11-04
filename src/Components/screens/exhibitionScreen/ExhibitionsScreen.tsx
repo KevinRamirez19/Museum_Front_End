@@ -21,7 +21,9 @@ function ExhibitionsScreens() {
   ]);
 
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [detailsModalVisible, setDetailsModalVisible] = useState<boolean>(false);
   const [form] = Form.useForm();
+  const [selectedExhibition, setSelectedExhibition] = useState<ExhibitionDataType | null>(null);
 
   const handleAddExhibition = async () => {
     try {
@@ -37,6 +39,19 @@ function ExhibitionsScreens() {
     } catch (errorInfo) {
       console.log('Failed:', errorInfo);
     }
+  };
+
+  const handleDeleteExhibition = (nombre: string) => {
+    setData(data.filter(exhibition => exhibition.nombre !== nombre));
+    notification.success({
+      message: 'Exhibición Eliminada',
+      description: `Se ha eliminado la exhibición "${nombre}".`,
+    });
+  };
+
+  const handleShowDetails = (record: ExhibitionDataType) => {
+    setSelectedExhibition(record);
+    setDetailsModalVisible(true);
   };
 
   const tableColumns: TableProps<ExhibitionDataType>["columns"] = [
@@ -69,6 +84,27 @@ function ExhibitionsScreens() {
         <span className={text === "Nuevo" ? "exhibition-status-new" : "exhibition-status-old"}>
           {text}
         </span>
+      ),
+      width: "20%",
+    },
+    {
+      title: "Acciones",
+      key: "acciones",
+      render: (_, record) => (
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => handleShowDetails(record)}
+          >
+            Detalles
+          </Button>
+          <Button
+            type="primary"
+            onClick={() => handleDeleteExhibition(record.nombre)}
+          >
+            Eliminar
+          </Button>
+        </Space>
       ),
       width: "20%",
     },
@@ -142,6 +178,23 @@ function ExhibitionsScreens() {
             </Button>
           </Space>
         </Form>
+      </Modal>
+
+      {/* Modal para mostrar detalles de la exhibición */}
+      <Modal
+        title="Detalles de la Exhibición"
+        visible={detailsModalVisible}
+        onCancel={() => setDetailsModalVisible(false)}
+        footer={null}
+      >
+        {selectedExhibition && (
+          <div>
+            <p><strong>Título:</strong> {selectedExhibition.nombre}</p>
+            <p><strong>Fecha de Inicio:</strong> {selectedExhibition.fechaDeInicio}</p>
+            <p><strong>Fecha Final:</strong> {selectedExhibition.fechaFinal}</p>
+            <p><strong>Estado:</strong> {selectedExhibition.estado}</p>
+          </div>
+        )}
       </Modal>
 
       <Table
