@@ -3,6 +3,7 @@ import { Table, TableProps, Select, Button, Input, Form, notification, Space, Mo
 import { BookOutlined, CalendarOutlined, CheckCircleOutlined, PlusCircleOutlined } from "@ant-design/icons";
 import useCategories from "../../../hooks/useCategories";
 import "./ExhibitionsScreen.css";
+import { useExhibition } from "../../../hooks/useExhibition";
 
 const { Option } = Select;
 
@@ -24,18 +25,35 @@ function ExhibitionsScreens() {
   const [detailsModalVisible, setDetailsModalVisible] = useState<boolean>(false);
   const [form] = Form.useForm();
   const [selectedExhibition, setSelectedExhibition] = useState<ExhibitionDataType | null>(null);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
 
-  const handleAddExhibition = async () => {
+  const handleAddOrUpdateExhibition = async () => {
     try {
       const values = await form.validateFields();
       const newExhibition: ExhibitionDataType = { ...values };
-      setData([...data, newExhibition]);
+      
+      if (isEditing && selectedExhibition) {
+        // Actualizar la exhibición existente
+        setData(data.map(exhibition =>
+          exhibition.nombre === selectedExhibition.nombre ? newExhibition : exhibition
+        ));
+        notification.success({
+          message: 'Exhibición Actualizada',
+          description: `Se ha actualizado la exhibición "${newExhibition.nombre}".`,
+        });
+      } else {
+        // Agregar una nueva exhibición
+        setData([...data, newExhibition]);
+        notification.success({
+          message: 'Exhibición Agregada',
+          description: `Se ha agregado la exhibición "${newExhibition.nombre}".`,
+        });
+      }
+
       setIsModalVisible(false);
       form.resetFields();
-      notification.success({
-        message: 'Exhibición Agregada',
-        description: `Se ha agregado la exhibición "${newExhibition.nombre}".`,
-      });
+      setSelectedExhibition(null);
+      setIsEditing(false);
     } catch (errorInfo) {
       console.log('Failed:', errorInfo);
     }
@@ -49,6 +67,13 @@ function ExhibitionsScreens() {
     });
   };
 
+  const handleEditExhibition = (record: ExhibitionDataType) => {
+    form.setFieldsValue(record);
+    setSelectedExhibition(record);
+    setIsEditing(true);
+    setIsModalVisible(true);
+  };
+
   const handleShowDetails = (record: ExhibitionDataType) => {
     setSelectedExhibition(record);
     setDetailsModalVisible(true);
@@ -59,28 +84,28 @@ function ExhibitionsScreens() {
       title: <><BookOutlined style={{ marginRight: 8 }} /> Título</>,
       dataIndex: "nombre",
       key: "nombre",
-      render: (text) => <span className="bold-text">{text}</span>,
+      render: (text: string) => <span className="bold-text">{text}</span>,
       width: "30%",
     },
     {
       title: <><CalendarOutlined style={{ marginRight: 8 }} /> Fecha de Inicio</>,
       dataIndex: "fechaDeInicio",
       key: "fechaDeInicio",
-      render: (text) => <span>{text}</span>,
+      render: (text: number) => <span>{text}</span>,
       width: "20%",
     },
     {
       title: <><CalendarOutlined style={{ marginRight: 8 }} /> Fecha Final</>,
       dataIndex: "fechaFinal",
       key: "fechaFinal",
-      render: (text) => <span>{text}</span>,
+      render: (text: number) => <span>{text}</span>,
       width: "20%",
     },
     {
       title: <><CheckCircleOutlined style={{ marginRight: 8 }} /> Estado</>,
       dataIndex: "estado",
       key: "estado",
-      render: (text) => (
+      render: (text: string) => (
         <span className={text === "Nuevo" ? "exhibition-status-new" : "exhibition-status-old"}>
           {text}
         </span>
@@ -90,23 +115,14 @@ function ExhibitionsScreens() {
     {
       title: "Acciones",
       key: "acciones",
-      render: (_, record) => (
+      render: (_: any, record: ExhibitionDataType) => (
         <Space>
-          <Button
-            type="primary"
-            onClick={() => handleShowDetails(record)}
-          >
-            Detalles
-          </Button>
-          <Button
-            type="primary"
-            onClick={() => handleDeleteExhibition(record.nombre)}
-          >
-            Eliminar
-          </Button>
+          <Button type="primary" onClick={() => handleShowDetails(record)}>Detalles</Button>
+          <Button onClick={() => handleEditExhibition(record)}>Editar</Button>
+          <Button danger onClick={() => handleDeleteExhibition(record.nombre)}>Eliminar</Button>
         </Space>
       ),
-      width: "20%",
+      width: "30%",
     },
   ];
 
@@ -126,7 +142,7 @@ function ExhibitionsScreens() {
       </Select>
       <Button
         type="primary"
-        onClick={() => setIsModalVisible(true)}
+        onClick={() => { setIsModalVisible(true); setIsEditing(false); form.resetFields(); }}
         className="add-exhibition-button"
         icon={<PlusCircleOutlined />}
       >
@@ -134,9 +150,9 @@ function ExhibitionsScreens() {
       </Button>
 
       <Modal
-        title={<span style={{ color: "#4caf50" }}><PlusCircleOutlined /> Agregar Nueva Exhibición</span>}
+        title={<span style={{ color: "#4caf50" }}>{isEditing ? "Actualizar Exhibición" : "Agregar Nueva Exhibición"}</span>}
         visible={isModalVisible}
-        onCancel={() => setIsModalVisible(false)}
+        onCancel={() => { setIsModalVisible(false); setIsEditing(false); form.resetFields(); }}
         footer={null}
         className="exhibition-modal"
       >
@@ -170,8 +186,8 @@ function ExhibitionsScreens() {
             <Input placeholder="Estado" />
           </Form.Item>
           <Space>
-            <Button type="primary" onClick={handleAddExhibition}>
-              Agregar
+            <Button type="primary" onClick={handleAddOrUpdateExhibition}>
+              {isEditing ? "Actualizar" : "Agregar"}
             </Button>
             <Button onClick={() => setIsModalVisible(false)} danger>
               Cancelar
@@ -180,7 +196,6 @@ function ExhibitionsScreens() {
         </Form>
       </Modal>
 
-      {/* Modal para mostrar detalles de la exhibición */}
       <Modal
         title="Detalles de la Exhibición"
         visible={detailsModalVisible}
