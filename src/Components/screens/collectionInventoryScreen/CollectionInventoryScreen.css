@@ -1,0 +1,65 @@
+/* CollectionTable.css */
+
+.collection-table-container {
+    padding: 20px;
+    background-color: #f7f9fc;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .collection-table-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .search-input {
+    width: 300px;
+    margin-bottom: 20px;
+  }
+  
+  .add-button {
+    margin-bottom: 20px;
+  }
+  
+  .ant-table {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .ant-table th {
+    background-color: #f0f2f5;
+    color: #333;
+    font-weight: bold;
+  }
+  
+  .ant-table td {
+    padding: 16px;
+    color: #666;
+  }
+  
+  .ant-popconfirm {
+    color: #ff4d4f;
+  }
+  
+  .ant-modal-header {
+    background-color: #1890ff;
+    color: white;
+  }
+  
+  .ant-modal-title {
+    font-weight: bold;
+  }
+  
+  .ant-form-item-label > label {
+    color: #333;
+    font-weight: 500;
+  }
+  
+  .ant-btn-primary {
+    background-color: #1890ff;
+    border-color: #1890ff;
+  }
+  
