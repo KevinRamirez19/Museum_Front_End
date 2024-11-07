@@ -3,19 +3,56 @@ import { Table, Input, Button, Popconfirm, message, Modal, Form } from "antd";
 import axios from "axios";
 import useCollections from "../../../hooks/useCollection";
 import "./CollectionInventoryScreen.css";
+import { Collection } from "../../../hooks/useCollection";
 
 const CollectionTable = () => {
-  const { collections, deleteCollection } = useCollections();
+  const { collections, deleteCollection, updateCollection, addCollection } = useCollections();
   const [searchText, setSearchText] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [newCollection, setNewCollection] = useState({ name: "", descriptiom: "" });
+  const [isEditing, setIsEditing] = useState(false);
+  const [newCollection, setNewCollection] = useState<Collection>({ collectionId: 0, name: "", descriptiom: "" });
+  const [editingCollection, setEditingCollection] = useState<Collection | null>(null);
 
-  // Filtrar datos de colecciones por nombre
   const filteredCollections = collections.filter((collection) =>
     collection.name.toLowerCase().includes(searchText.toLowerCase())
   );
 
-  // Configuración de columnas de la tabla
+  const showEditModal = (collection: Collection) => {
+    setEditingCollection(collection);
+    setIsEditing(true);
+    setIsModalVisible(true);
+  };
+
+  const handleUpdateCollection = async () => {
+    if (editingCollection) {
+      const success = await updateCollection(editingCollection);
+      if (success) {
+        message.success("Colección actualizada correctamente.");
+        setIsModalVisible(false);
+        setEditingCollection(null);
+        setIsEditing(false);
+      } else {
+        message.error("Error al actualizar la colección.");
+      }
+    }
+  };
+
+  const showModal = () => {
+    setIsEditing(false);
+    setIsModalVisible(true);
+  };
+
+  const handleAddCollection = async () => {
+    const success = await addCollection(newCollection); // Usar el hook para agregar la colección
+    if (success) {
+      message.success("Colección agregada correctamente.");
+      setIsModalVisible(false);
+      setNewCollection({ collectionId: 0, name: "", descriptiom: "" });
+    } else {
+      message.error("Error al agregar la colección.");
+    }
+  };
+
   const collectionColumns = [
     { title: "Nombre", dataIndex: "name", key: "name" },
     { title: "Descripción", dataIndex: "descriptiom", key: "descriptiom" },
@@ -23,54 +60,31 @@ const CollectionTable = () => {
       title: "Acciones",
       key: "actions",
       render: (text: any, record: any) => (
-        <Popconfirm
-          title="¿Estás seguro de eliminar esta colección?"
-          onConfirm={() => handleDelete(record.collectionId)}
-          okText="Sí"
-          cancelText="No"
-        >
-          <Button type="link" danger>
-            Eliminar
+        <>
+          <Button type="link" onClick={() => showEditModal(record)}>
+            Editar
           </Button>
-        </Popconfirm>
+          <Popconfirm
+            title="¿Estás seguro de eliminar esta colección?"
+            onConfirm={() => handleDelete(record.collectionId)}
+            okText="Sí"
+            cancelText="No"
+          >
+            <Button type="link" danger>
+              Eliminar
+            </Button>
+          </Popconfirm>
+        </>
       ),
     },
   ];
 
-  // Función para eliminar la colección
   const handleDelete = async (collectionId: number) => {
     const success = await deleteCollection(collectionId);
     if (success) {
       message.success("Colección eliminada correctamente.");
     } else {
       message.error("No se pudo eliminar la colección.");
-    }
-  };
-
-  // Función para mostrar el modal de agregar colección
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
-
-  // Función para manejar el envío del formulario y agregar la colección
-  const handleAddCollection = async () => {
-    try {
-      const response = await axios.post("https://nationalmuseum2.somee.com/api/Collection", newCollection, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      
-      message.success("Colección agregada correctamente.");
-      setIsModalVisible(false);
-      setNewCollection({ name: "", descriptiom: "" });
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        message.error(`Error al agregar la colección: ${error.response?.data?.message || error.message}`);
-      } else {
-        message.error("Error desconocido.");
-      }
-      console.error("Error al agregar la colección:", error);
     }
   };
 
@@ -92,31 +106,39 @@ const CollectionTable = () => {
         pagination={{ pageSize: 5 }}
       />
 
-      {/* Modal para agregar colección */}
-      <Modal
-        title="Agregar Nueva Colección"
-        visible={isModalVisible}
-        onOk={handleAddCollection}
-        onCancel={() => setIsModalVisible(false)}
-        okText="Agregar"
-        cancelText="Cancelar"
-      >
-        <Form layout="vertical">
-          <Form.Item label="Nombre">
-            <Input
-              value={newCollection.name}
-              onChange={(e) => setNewCollection({ ...newCollection, name: e.target.value })}
-            />
-          </Form.Item>
-          <Form.Item label="Descripción">
-            <Input
-              value={newCollection.descriptiom}
-              onChange={(e) => setNewCollection({ ...newCollection, descriptiom: e.target.value })}
-            />
-          </Form.Item>
-        </Form>
-      </Modal>
-    </div>
+  <Modal
+    title={isEditing ? "Editar Colección" : "Agregar Nueva Colección"}
+    visible={isModalVisible}
+    onOk={isEditing ? handleUpdateCollection : handleAddCollection}
+    onCancel={() => setIsModalVisible(false)}
+    okText={isEditing ? "Actualizar" : "Agregar"}
+    cancelText="Cancelar"
+  >
+    <Form layout="vertical">
+      <Form.Item label="Nombre">
+        <Input
+          value={isEditing ? editingCollection?.name : newCollection.name}
+          onChange={(e) =>
+            isEditing
+              ? setEditingCollection({ ...editingCollection, name: e.target.value } as Collection)
+              : setNewCollection({ ...newCollection, name: e.target.value })
+          }
+        />
+      </Form.Item>
+      <Form.Item label="Descripción">
+        <Input
+          value={isEditing ? editingCollection?.descriptiom : newCollection.descriptiom}
+          onChange={(e) =>
+            isEditing
+              ? setEditingCollection({ ...editingCollection, descriptiom: e.target.value } as Collection)
+              : setNewCollection({ ...newCollection, descriptiom: e.target.value })
+          }
+        />
+      </Form.Item>
+    </Form>
+  </Modal>
+
+      </div>
   );
 };
 

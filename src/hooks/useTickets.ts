@@ -38,7 +38,7 @@ const useTickets = () => {
     try {
       const requestBody = {
         ticketId: updatedTicket.ticketId,
-        user_Id: updatedTicket.user.identificationNumber,
+        user_Id: Number(updatedTicket.user.identificationNumber), // Asegúrate de que esto es un número
         visitDate: updatedTicket.visitDate,
         ticketType_Id: updatedTicket.ticketType.ticketTypeId,
         paymentMethod_Id: updatedTicket.paymentMethod.paymentMethodId,
