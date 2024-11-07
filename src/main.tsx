@@ -12,6 +12,7 @@ import CollectionInventoryScreen from "./Components/screens/collectionInventoryS
 import App from "./App.tsx";
 import HomeScreen from "./Components/screens/homeScreen/HomeScreen.tsx";
 import ReportesScreen from "./Components/screens/reportesScreen/ReportesScreen.tsx";
+import VisitorManagementScreen from "./Components/screens/visitorManagementScreen/VisitorManagementScreen.tsx";
 import LoginScreen from "./Components/screens/loginScreen/LoginScreen.tsx";
 
 const router = createBrowserRouter(
@@ -21,6 +22,7 @@ const router = createBrowserRouter(
       <Route path="/exhibition" element={<ExhibitionsScreens />} />
       <Route path="/collectInventory" element={<CollectionInventoryScreen />} />
       <Route path="/reports" element={<ReportesScreen />} />
+      <Route path="/visitorManagement" element={<VisitorManagementScreen/>} />
       <Route path="/login" element={<LoginScreen />} />
     </Route>
   )

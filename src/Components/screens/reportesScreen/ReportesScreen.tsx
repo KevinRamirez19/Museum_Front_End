@@ -63,10 +63,10 @@ const handleDelete = async (scenaryId: number) => {
 
 
   // Contar ocurrencias de cada etapa
-  const progressCount = gameProgressData.reduce((acc, item) => {
+  const progressCount = gameProgressData.reduce((acc: { [key: string]: number }, item) => {
     acc[item.gameProgress] = (acc[item.gameProgress] || 0) + 1;
     return acc;
-  }, {});
+  }, {} as { [key: string]: number });
 
   // Convertir a formato para la gráfica de líneas
   const lineChartData = Object.keys(progressCount).map((key) => ({

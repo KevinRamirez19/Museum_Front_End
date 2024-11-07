@@ -6,6 +6,10 @@
       "destination": "/index.html"
     },
     {
+      "source": "/visitorManagement",
+      "destination": "/index.html"
+    },
+    {
       "source": "/collectInventory",
       "destination": "/index.html"
     },
