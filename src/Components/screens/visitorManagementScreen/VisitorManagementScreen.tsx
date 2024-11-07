@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 const { Option } = Select;
 
 const VisitorManagementScreen = () => {
-  const { tickets, loading, error, updateTicket } = useTickets();
+  const { tickets, loading, error, updateTicket, deleteTicket } = useTickets();
   const [editingKey, setEditingKey] = useState<number | null>(null);
   const [editedTicket, setEditedTicket] = useState<any>(null);
 
@@ -33,6 +33,7 @@ const VisitorManagementScreen = () => {
       },
     });
   };
+  
 
   const cancel = () => {
     setEditingKey(null);
@@ -51,6 +52,23 @@ const VisitorManagementScreen = () => {
         [field]: value,
       });
     }
+  };
+
+  const handleDelete = (ticketId: number) => {
+    Modal.confirm({
+      title: "¿Está seguro de que desea eliminar este ticket?",
+      onOk: async () => {
+        const success = await deleteTicket(ticketId);
+        if (success) {
+          message.success("Ticket eliminado exitosamente");
+        } else {
+          message.error("Error al eliminar el ticket");
+        }
+      },
+      onCancel: () => {
+        message.info("El ticket no fue eliminado");
+      },
+    });
   };
 
   const ticketColumns = [
@@ -126,17 +144,16 @@ const VisitorManagementScreen = () => {
       render: (_: any, record: any) => (
         editingKey === record.ticketId ? (
           <>
-            <Button onClick={save} type="link">
-              Guardar
-            </Button>
-            <Button onClick={cancel} type="link">
-              Cancelar
-            </Button>
+            <Button onClick={save} type="link">Guardar</Button>
+            <Button onClick={cancel} type="link">Cancelar</Button>
           </>
         ) : (
-          <Button onClick={() => edit(record)} type="link">
-            Editar
-          </Button>
+          <>
+            <Button onClick={() => edit(record)} type="link">Editar</Button>
+            <Button onClick={() => handleDelete(record.ticketId)} type="link" danger>
+              Eliminar
+            </Button>
+          </>
         )
       ),
     },

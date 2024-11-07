@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from "react"; 
 import axios from "axios";
 
 interface Ticket {
@@ -58,13 +58,25 @@ const useTickets = () => {
       return false;
     }
   };
-  
+
+  // Función para eliminar un ticket
+  const deleteTicket = async (ticketId: number) => {
+    try {
+      await axios.delete(`https://nationalmuseum2.somee.com/api/Tickets/${ticketId}`);
+      setTickets((prevTickets) => prevTickets.filter(ticket => ticket.ticketId !== ticketId));
+      return true;
+    } catch (err) {
+      setError("Error al eliminar el ticket.");
+      console.error("Error al eliminar el ticket:", err);
+      return false;
+    }
+  };
 
   useEffect(() => {
     fetchTickets();
   }, []);
 
-  return { tickets, loading, error, updateTicket };
+  return { tickets, loading, error, updateTicket, deleteTicket };
 };
 
 export default useTickets;
