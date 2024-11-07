@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import myApi from "../assets/lib/axios/myApi";
-import { set } from "react-hook-form";
 
 interface Categories {
   idCategoria: number;
