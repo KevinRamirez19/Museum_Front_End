@@ -29,6 +29,10 @@ interface ExhibitionDataType {
 
 function ExhibitionsScreens() {
   const { exhibitions, addExhibition, deleteExhibition, loading } = useExhibition();
+  
+  // Verificar el contenido de 'exhibitions' proveniente del backend
+  console.log("Datos de exhibitions:", exhibitions);
+
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [detailsModalVisible, setDetailsModalVisible] = useState<boolean>(false);
   const [form] = Form.useForm();
@@ -54,6 +58,9 @@ function ExhibitionsScreens() {
     description: exhibition.description || "Descripción predeterminada",
     artRoomId: exhibition.artRoomId || 1,
   }));
+
+  // Verificar el contenido de exhibitionsData
+  console.log("Datos de exhibitionsData después de mapear:", exhibitionsData);
 
   const handleAddOrUpdateExhibition = async () => {
     try {
@@ -238,8 +245,8 @@ function ExhibitionsScreens() {
       {/* Modal para ver detalles de la exhibición */}
       <Modal
         title="Detalles de la Exhibición"
-        visible={detailsModalVisible}  // Usa el estado para mostrar/ocultar el modal
-        onCancel={() => setDetailsModalVisible(false)}  // Cierra el modal
+        visible={detailsModalVisible}
+        onCancel={() => setDetailsModalVisible(false)}
         footer={null}
         className="exhibition-details-modal"
       >
@@ -251,19 +258,17 @@ function ExhibitionsScreens() {
             <p><strong>Estado:</strong> {selectedExhibition.estado}</p>
             <p><strong>Descripción:</strong> {selectedExhibition.description}</p>
             <p><strong>Sala:</strong> {selectedExhibition.artRoom.name}</p>
-            <p><strong>Descripción de Sala:</strong> {selectedExhibition.artRoom.description}</p>
           </div>
         ) : (
-          <p>Cargando detalles...</p>
+          <p>No se han seleccionado detalles de la exhibición.</p>
         )}
       </Modal>
 
-      {/* Tabla de Exhibiciones */}
-      <Table<ExhibitionDataType>
+      <Table
         columns={tableColumns}
         dataSource={exhibitionsData}
-        loading={loading}
         rowKey="exhibitionId"
+        loading={loading}
         pagination={{ pageSize: 5 }}
       />
     </div>
