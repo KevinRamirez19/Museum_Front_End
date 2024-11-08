@@ -1,7 +1,7 @@
 import { Menu } from "antd";
 import type { MenuProps } from "antd";
 import styled from 'styled-components';
-import { HomeOutlined, UnorderedListOutlined, AppstoreAddOutlined, UsergroupAddOutlined, FileDoneOutlined, BarsOutlined, LoginOutlined, AppstoreOutlined, TeamOutlined } from '@ant-design/icons'; // Importar TeamOutlined en lugar de EmployeesOutlined
+import { HomeOutlined, UnorderedListOutlined, AppstoreAddOutlined, UsergroupAddOutlined, FileDoneOutlined, LoginOutlined, AppstoreOutlined, TeamOutlined } from '@ant-design/icons'; // Importar TeamOutlined en lugar de EmployeesOutlined
 
 const StyledMenu = styled(Menu)`
   background-color: #fff; /* Fondo blanco */
