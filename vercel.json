@@ -10,6 +10,10 @@
       "destination": "/index.html"
     },
     {
+      "source": "/employees",
+      "destination": "/index.html"
+    },
+    {
       "source": "/collectInventory",
       "destination": "/index.html"
     },
@@ -19,6 +23,10 @@
     },
     {
       "source": "/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/artRooms",
       "destination": "/index.html"
     },
     {
