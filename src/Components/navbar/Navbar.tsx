@@ -1,7 +1,7 @@
 import { Menu } from "antd";
 import type { MenuProps } from "antd";
 import styled from 'styled-components';
-import { HomeOutlined, UnorderedListOutlined, AppstoreAddOutlined, UsergroupAddOutlined, FileDoneOutlined, SettingOutlined, LoginOutlined } from '@ant-design/icons';
+import { HomeOutlined, UnorderedListOutlined, AppstoreAddOutlined, UsergroupAddOutlined, FileDoneOutlined, LoginOutlined, AppstoreOutlined, TeamOutlined } from '@ant-design/icons'; // Importar TeamOutlined en lugar de EmployeesOutlined
 
 const StyledMenu = styled(Menu)`
   background-color: #fff; /* Fondo blanco */
@@ -40,8 +40,9 @@ function Navbar() {
     { key: "/collectInventory", label: <a href="/collectInventory"><AppstoreAddOutlined />Colección</a> },
     { key: "visitorManagement", label: <a href="/visitorManagement"><UsergroupAddOutlined />Gestión de Visitantes</a> },
     { key: "reports", label: <a href="/reports"><FileDoneOutlined />Reportes</a> },
-    { key: "settings", label: <a href="/settings"><SettingOutlined />Ajustes</a> },
+    { key: "artRooms", label: <a href="/artRooms"><AppstoreOutlined />Cuarto de Arte</a> }, 
     { key: "login", label: <a href="/login"><LoginOutlined />Iniciar Sesión</a> },
+    { key: "employees", label: <a href="/employees"><TeamOutlined />Empleados</a> },
   ];
 
   const handleOnClick: MenuProps["onClick"] = (e) => {

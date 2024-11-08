@@ -14,6 +14,8 @@ import HomeScreen from "./Components/screens/homeScreen/HomeScreen.tsx";
 import ReportesScreen from "./Components/screens/reportesScreen/ReportesScreen.tsx";
 import VisitorManagementScreen from "./Components/screens/visitorManagementScreen/VisitorManagementScreen.tsx";
 import LoginScreen from "./Components/screens/loginScreen/LoginScreen.tsx";
+import ArtRoomsScreen from "./Components/screens/artRoomsScreen/ArtRoomsScreen.tsx";
+import EmployeesScreen from "./Components/screens/employeesScreen/EmployeesScreen.tsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -24,6 +26,9 @@ const router = createBrowserRouter(
       <Route path="/reports" element={<ReportesScreen />} />
       <Route path="/visitorManagement" element={<VisitorManagementScreen/>} />
       <Route path="/login" element={<LoginScreen />} />
+      <Route path= "/artRooms" element={<ArtRoomsScreen/>}/>
+      <Route path= "/employees" element={<EmployeesScreen/>}/>
+      
     </Route>
   )
 );
