@@ -91,19 +91,34 @@ const EmployeeManagementScreen = () => {
     });
   };
 
-  const filteredEmployees = employees.filter((employee) =>
-    `${employee.user.names} ${employee.user.lastNames}`.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredEmployees = employees.filter((employee) => {
+    const names = employee.user.names || "";
+    const lastNames = employee.user.lastNames || "";
+    return `${names} ${lastNames}`.toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
   const employeeColumns = [
     {
       title: "Nombre",
       dataIndex: ["user", "names"],
       key: "names",
-      render: (_: any, record: Employee) => `${record.user.names} ${record.user.lastNames}`,
+      render: (_: any, record: Employee) =>
+        `${record.user.names} ${record.user.lastNames}`,
     },
-    { title: "Número de Identificación", dataIndex: ["user", "identificationNumber"], key: "identificationNumber" },
-    { title: "Contacto", dataIndex: ["user", "contact"], key: "contact" },
+    {
+      title: "Número de Identificación",
+      dataIndex: ["user", "identificationNumber"],
+      key: "identificationNumber",
+      render: (_: any, record: Employee) =>
+        record.user.identificationNumber,
+    },
+    {
+      title: "Contacto",
+      dataIndex: ["user", "contact"],
+      key: "contact",
+      render: (_: any, record: Employee) =>
+        record.user.contact,
+    },
     {
       title: "Fecha de Contratación",
       dataIndex: "hiringDate",
@@ -136,7 +151,7 @@ const EmployeeManagementScreen = () => {
             ))}
           </Select>
         ) : (
-          typeEmployees.find((type) => type.typeEmployee_Id === record.typeEmployee_Id)?.typeEmployee
+          typeEmployees.find((type) => type.typeEmployee_Id === record.typeEmployee_Id)?.typeEmployee || "Sin tipo"
         ),
     },
     {
@@ -157,7 +172,7 @@ const EmployeeManagementScreen = () => {
             ))}
           </Select>
         ) : (
-          workSchedules.find((schedule) => schedule.workShedule_Id === record.workShedule_Id)?.schedule
+          workSchedules.find((schedule) => schedule.workShedule_Id === record.workShedule_Id)?.schedule || "Sin horario"
         ),
     },
     {
@@ -166,19 +181,17 @@ const EmployeeManagementScreen = () => {
       render: (_: any, record: Employee) =>
         editingKey === record.employeeId ? (
           <>
-            <Button onClick={save} type="link">
+            <Button onClick={save} type="primary" style={{ marginRight: 8 }}>
               Guardar
             </Button>
-            <Button onClick={cancel} type="link">
-              Cancelar
-            </Button>
+            <Button onClick={cancel}>Cancelar</Button>
           </>
         ) : (
           <>
-            <Button onClick={() => edit(record)} type="link">
+            <Button onClick={() => edit(record)} style={{ marginRight: 8 }}>
               Editar
             </Button>
-            <Button onClick={() => handleDelete(record.employeeId)} type="link" danger>
+            <Button onClick={() => handleDelete(record.employeeId)} danger>
               Eliminar
             </Button>
           </>
@@ -186,24 +199,22 @@ const EmployeeManagementScreen = () => {
     },
   ];
 
-  if (loading) return <div>Cargando datos de empleados...</div>;
-  if (error) return <div>{error}</div>;
-
   return (
     <div>
-      <h3>Gestión de Empleados</h3>
       <Input
-        placeholder="Buscar por nombre"
+        placeholder="Buscar empleado por nombre o apellido"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        style={{ marginBottom: 20, width: 300 }}
+        style={{ marginBottom: 16, width: 300 }}
       />
       <Table
         columns={employeeColumns}
         dataSource={filteredEmployees}
         rowKey="employeeId"
-        pagination={{ pageSize: 5 }}
+        loading={loading}
+        pagination={{ pageSize: 10 }}
       />
+      {error && <p style={{ color: "red" }}>{error}</p>}
     </div>
   );
 };
