@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 import { Table, Button, message, Modal } from "antd";
 import useExhibitions from "../../../hooks/useExhibition";
 
-// Definir las interfaces de Exhibition y ArtRoom
+
 interface ArtRoomType {
-  artRoomId: number; // Este es el id de la sala de arte
+  artRoomId: number; 
   name: string;
   description: string;
-  collection_Id: number; // Este es el collection_Id que necesitamos mostrar
+  collection_Id: number; 
 }
 
 interface ExhibitionType {
@@ -15,7 +15,7 @@ interface ExhibitionType {
   name: string;
   description: string;
   artRoomId: number;
-  artRoom: ArtRoomType;  // Relación con la sala de arte
+  artRoom: ArtRoomType;  
 }
 
 const ExhibitionManagementScreen = () => {
