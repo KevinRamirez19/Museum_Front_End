@@ -9,6 +9,12 @@ interface Employee {
   typeEmployee_Id: number;
   workShedule_Id: number;
   hiringDate: string;
+  user: {
+    names: string;
+    lastNames: string;
+    identificationNumber: string;
+    contact: string;
+  };
 }
 
 // Definir interfaces para los tipos de empleados y horarios de trabajo
