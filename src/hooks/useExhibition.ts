@@ -128,8 +128,16 @@ const useExhibitions = () => {
   useEffect(() => {
     fetchExhibitions();
   }, []);
-  console.log(exhibitions);
-  return { exhibitions, loading, error, fetchExhibitions, addExhibition, deleteExhibition };
+
+  return {
+    exhibitions,
+    loading,
+    error,
+    addExhibition,
+    updateExhibition,
+    deleteExhibition,
+    deleteArtRoom,
+  };
 };
 
 export default useExhibitions;

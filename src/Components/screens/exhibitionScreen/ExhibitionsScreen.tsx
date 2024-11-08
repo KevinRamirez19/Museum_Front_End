@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 import { Table, Button, message, Modal } from "antd";
 import useExhibitions from "../../../hooks/useExhibition";
 
-
+// Definir las interfaces de Exhibition y ArtRoom
 interface ArtRoomType {
-  artRoomId: number; 
+  artRoomId: number; // Este es el id de la sala de arte
   name: string;
   description: string;
-  collection_Id: number; 
+  collection_Id: number; // Este es el collection_Id que necesitamos mostrar
 }
 
 interface ExhibitionType {
@@ -15,84 +15,13 @@ interface ExhibitionType {
   name: string;
   description: string;
   artRoomId: number;
+  artRoom: ArtRoomType;  // Relación con la sala de arte
 }
 
-function ExhibitionsScreens() {
-  const { exhibitions, addExhibition, deleteExhibition, loading } = useExhibition();
-  
-  // Verificar el contenido de 'exhibitions' proveniente del backend
-  console.log("Datos de exhibitions:", exhibitions);
+const ExhibitionManagementScreen = () => {
+  const { exhibitions, loading, error, deleteExhibition, deleteArtRoom } = useExhibitions();
 
-  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
-  const [detailsModalVisible, setDetailsModalVisible] = useState<boolean>(false);
-  const [form] = Form.useForm();
-  const [selectedExhibition, setSelectedExhibition] = useState<ExhibitionDataType | null>(null);
-  const [isEditing, setIsEditing] = useState<boolean>(false);
-
-  // Mapea los datos para asegurar el tipo ExhibitionDataType
-  const exhibitionsData: ExhibitionDataType[] = exhibitions.map(exhibition => ({
-    exhibitionId: exhibition.exhibitionId,
-    nombre: exhibition.nombre || "Nombre predeterminado",
-    fechaDeInicio: exhibition.fechaDeInicio || "Fecha de inicio predeterminada",
-    fechaFinal: exhibition.fechaFinal || "Fecha final predeterminada",
-    estado: exhibition.estado || "Estado predeterminado",
-    artRoom: exhibition.artRoom || {
-      artRoomId: 1,
-      location_Id: 1,
-      collection_Id: 1,
-      name: "Sala predeterminada",
-      description: "Descripción predeterminada",
-      numberExhibitions: "0",
-    },
-    name: exhibition.name || "Nombre predeterminado",
-    description: exhibition.description || "Descripción predeterminada",
-    artRoomId: exhibition.artRoomId || 1,
-  }));
-
-  // Verificar el contenido de exhibitionsData
-  console.log("Datos de exhibitionsData después de mapear:", exhibitionsData);
-
-  const handleAddOrUpdateExhibition = async () => {
-    try {
-      const values = await form.validateFields();
-      const newExhibition: ExhibitionDataType = { 
-        ...values, 
-        exhibitionId: Date.now(),
-        artRoom: {
-          artRoomId: 1,
-          location_Id: 1,
-          collection_Id: 1,
-          name: "Sala Principal",
-          description: "Sala principal del museo",
-          numberExhibitions: "10",
-        },
-        name: values.nombre,
-        description: values.description || "Descripción de la exhibición",
-        artRoomId: 1,
-      };
-
-      if (isEditing && selectedExhibition) {
-        notification.success({
-          message: 'Exhibición Actualizada',
-          description: `Se ha actualizado la exhibición "${newExhibition.nombre}".`,
-        });
-      } else {
-        addExhibition(newExhibition);
-        notification.success({
-          message: 'Exhibición Agregada',
-          description: `Se ha agregado la exhibición "${newExhibition.nombre}".`,
-        });
-      }
-
-      setIsModalVisible(false);
-      form.resetFields();
-      setSelectedExhibition(null);
-      setIsEditing(false);
-    } catch (errorInfo) {
-      console.log('Failed:', errorInfo);
-    }
-  };
-
+  // Función para manejar la eliminación de una exhibición
   const handleDeleteExhibition = (exhibitionId: number) => {
     Modal.confirm({
       title: "¿Está seguro de que desea eliminar esta exposición?",
@@ -110,16 +39,22 @@ function ExhibitionsScreens() {
     });
   };
 
-  const handleEditExhibition = (record: ExhibitionDataType) => {
-    form.setFieldsValue(record);
-    setSelectedExhibition(record);
-    setIsEditing(true);
-    setIsModalVisible(true);
-  };
-
-  const handleShowDetails = (record: ExhibitionDataType) => {
-    setSelectedExhibition(record);  // Asigna la exhibición seleccionada al estado
-    setDetailsModalVisible(true);  // Muestra el modal de detalles
+  // Función para manejar la eliminación de una sala de arte
+  const handleDeleteArtRoom = (artRoomId: number) => {
+    Modal.confirm({
+      title: "¿Está seguro de que desea eliminar esta sala de arte?",
+      onOk: async () => {
+        const success = await deleteArtRoom(artRoomId);
+        if (success) {
+          message.success("Sala de arte eliminada exitosamente");
+        } else {
+          message.error("Error al eliminar la sala de arte");
+        }
+      },
+      onCancel: () => {
+        message.info("La sala de arte no fue eliminada");
+      },
+    });
   };
 
   // Columnas de las exposiciones
@@ -167,104 +102,19 @@ function ExhibitionsScreens() {
   if (error) return <div>{error}</div>;
 
   return (
-    <div className="exhibitions-container">
-      <h2 className="exhibitions-title">Exhibiciones Disponibles</h2>
-      <Select
-        placeholder="Selecciona una exhibición"
-        className="category-select"
-        dropdownStyle={{ backgroundColor: "#ffffff" }}
-      >
-        {exhibitionsData.map((exhibition) => (
-          <Option key={exhibition.exhibitionId} value={exhibition.exhibitionId}>
-            {exhibition.name}
-          </Option>
-        ))}
-      </Select>
-      <Button
-        type="primary"
-        onClick={() => { setIsModalVisible(true); setIsEditing(false); form.resetFields(); }}
-        className="add-exhibition-button"
-        icon={<PlusCircleOutlined />}
-      >
-        Crear Nueva Exhibición
-      </Button>
-
-      {/* Modal para agregar o actualizar una exhibición */}
-      <Modal
-        title={<span style={{ color: "#4caf50" }}>{isEditing ? "Actualizar Exhibición" : "Agregar Nueva Exhibición"}</span>}
-        visible={isModalVisible}
-        onCancel={() => { setIsModalVisible(false); setIsEditing(false); form.resetFields(); }}
-        footer={null}
-        className="exhibition-modal"
-      >
-        <Form form={form} layout="vertical">
-          <Form.Item
-            label="Nombre"
-            name="nombre"
-            rules={[{ required: true, message: 'Por favor ingresa el nombre de la exhibición' }]} >
-            <Input placeholder="Nombre" />
-          </Form.Item>
-          <Form.Item
-            label="Fecha de Inicio"
-            name="fechaDeInicio"
-            rules={[{ required: true, message: 'Por favor ingresa la fecha de inicio' }]} >
-            <Input placeholder="Fecha de Inicio" type="text" />
-          </Form.Item>
-          <Form.Item
-            label="Fecha Final"
-            name="fechaFinal"
-            rules={[{ required: true, message: 'Por favor ingresa la fecha final' }]} >
-            <Input placeholder="Fecha Final" type="text" />
-          </Form.Item>
-          <Form.Item
-            label="Estado"
-            name="estado"
-            rules={[{ required: true, message: 'Por favor ingresa el estado' }]} >
-            <Input placeholder="Estado" />
-          </Form.Item>
-          <Form.Item
-            label="Descripción"
-            name="description">
-            <Input.TextArea placeholder="Descripción de la exhibición" />
-          </Form.Item>  
-          <Form.Item>
-            <Button
-              type="primary"
-              onClick={handleAddOrUpdateExhibition}
-              block>
-              {isEditing ? "Actualizar" : "Agregar"}
-            </Button>
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      {/* Modal para ver detalles de la exhibición */}
-      <Modal
-        title="Detalles de la Exhibición"
-        visible={detailsModalVisible}
-        onCancel={() => setDetailsModalVisible(false)}
-        footer={null}
-        className="exhibition-details-modal"
-      >
-        {selectedExhibition ? (
-          <div>
-            <p><strong>Nombre:</strong> {selectedExhibition.nombre}</p>
-            <p><strong>Fecha de Inicio:</strong> {selectedExhibition.fechaDeInicio}</p>
-            <p><strong>Fecha Final:</strong> {selectedExhibition.fechaFinal}</p>
-            <p><strong>Estado:</strong> {selectedExhibition.estado}</p>
-            <p><strong>Descripción:</strong> {selectedExhibition.description}</p>
-            <p><strong>Sala:</strong> {selectedExhibition.artRoom.name}</p>
-          </div>
-        ) : (
-          <p>No se han seleccionado detalles de la exhibición.</p>
-        )}
-      </Modal>
-
+    <div>
+      <h3>Gestión de Exposiciones</h3>
       <Table
-        columns={tableColumns}
-        dataSource={exhibitionsData}
+        columns={exhibitionColumns}
+        dataSource={exhibitions}
         rowKey="exhibitionId"
-        loading={loading}
+        pagination={{ pageSize: 5 }}
+      />
+      <h3>Salas de Arte</h3>
+      <Table
+        columns={artRoomColumns}
+        dataSource={[...new Map(exhibitions.map((exhibition) => [exhibition.artRoom.artRoomId, exhibition.artRoom])).values()]}
+        rowKey="artRoomId"
         pagination={{ pageSize: 5 }}
       />
     </div>
