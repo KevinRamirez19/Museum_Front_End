@@ -1,124 +1,181 @@
 import { useState, useEffect } from "react";
-import { Table, Button, message, Modal } from "antd";
+import { Table, Button, message, Modal, Input, Form } from "antd";
+import { EditOutlined, SaveOutlined, CloseOutlined, DeleteOutlined } from "@ant-design/icons";
 import useExhibitions from "../../../hooks/useExhibition";
 
-// Definir las interfaces de Exhibition y ArtRoom
-interface ArtRoomType {
-  artRoomId: number; // Este es el id de la sala de arte
-  name: string;
-  description: string;
-  collection_Id: number; // Este es el collection_Id que necesitamos mostrar
-}
+const { Column } = Table;
+const { Search } = Input;
 
-interface ExhibitionType {
-  exhibitionId: number;
-  name: string;
-  description: string;
-  artRoomId: number;
-  artRoom: ArtRoomType;  // Relación con la sala de arte
-}
+const ExhibitionsScreen = () => {
+  const { exhibitions, artRooms, loading, error, updateExhibition, updateArtRoom, deleteExhibition, deleteArtRoom } = useExhibitions();
+  const [editingKey, setEditingKey] = useState<number | null>(null);
+  const [form] = Form.useForm();
+  const [searchTextExhibition, setSearchTextExhibition] = useState("");
+  const [searchTextArtRoom, setSearchTextArtRoom] = useState("");
 
-const ExhibitionManagementScreen = () => {
-  const { exhibitions, loading, error, deleteExhibition, deleteArtRoom } = useExhibitions();
+  const startEditing = (record: any) => {
+    setEditingKey("exhibitionId" in record ? record.exhibitionId : record.artRoomId);
+    form.setFieldsValue({ ...record });
+  };
 
-  // Función para manejar la eliminación de una exhibición
-  const handleDeleteExhibition = (exhibitionId: number) => {
+  const cancelEditing = () => {
+    setEditingKey(null);
+    form.resetFields();
+  };
+
+  const save = async (record: any) => {
+    try {
+      const updatedRecord = await form.validateFields();
+      if ("exhibitionId" in record) {
+        await updateExhibition({ ...record, ...updatedRecord });
+        message.success("Exposición actualizada exitosamente.");
+      } else if ("artRoomId" in record) {
+        await updateArtRoom({ ...record, ...updatedRecord });
+        message.success("Sala de arte actualizada exitosamente.");
+      }
+      setEditingKey(null);
+    } catch (error) {
+      message.error("Error al guardar los cambios.");
+    }
+  };
+
+  const confirmDelete = (record: any) => {
     Modal.confirm({
-      title: "¿Está seguro de que desea eliminar esta exposición?",
+      title: `¿Está seguro de que desea eliminar este ${"exhibitionId" in record ? "exposición" : "sala de arte"}?`,
+      okText: "Sí",
+      cancelText: "No",
       onOk: async () => {
-        const success = await deleteExhibition(exhibitionId);
-        if (success) {
-          message.success("Exposición eliminada exitosamente");
-        } else {
-          message.error("Error al eliminar la exposición");
+        if ("exhibitionId" in record) {
+          await deleteExhibition(record.exhibitionId);
+          message.success("Exposición eliminada exitosamente.");
+        } else if ("artRoomId" in record) {
+          await deleteArtRoom(record.artRoomId);
+          message.success("Sala de arte eliminada exitosamente.");
         }
-      },
-      onCancel: () => {
-        message.info("La exposición no fue eliminada");
       },
     });
   };
 
-  // Función para manejar la eliminación de una sala de arte
-  const handleDeleteArtRoom = (artRoomId: number) => {
-    Modal.confirm({
-      title: "¿Está seguro de que desea eliminar esta sala de arte?",
-      onOk: async () => {
-        const success = await deleteArtRoom(artRoomId);
-        if (success) {
-          message.success("Sala de arte eliminada exitosamente");
-        } else {
-          message.error("Error al eliminar la sala de arte");
-        }
-      },
-      onCancel: () => {
-        message.info("La sala de arte no fue eliminada");
-      },
-    });
-  };
+  const filteredExhibitions = exhibitions.filter((exhibition) =>
+    exhibition.name.toLowerCase().includes(searchTextExhibition.toLowerCase()) ||
+    exhibition.artRoom.artRoomId.toString().includes(searchTextExhibition)
+  );
 
-  // Columnas de las exposiciones
-  const exhibitionColumns = [
-    { title: "Nombre de la Exposición", dataIndex: "name", key: "name" },
-    { title: "Descripción de la Exposición", dataIndex: "description", key: "description" },
-    {
-      title: "Sala a la que pertenece",
-      dataIndex: "artRoom",
-      key: "artRoomId",
-      render: (artRoom: ArtRoomType) => artRoom?.artRoomId, // Mostrar artRoomId
-    },
-    {
-      title: "Acciones",
-      key: "actions",
-      render: (_: any, record: ExhibitionType) => (
-        <Button onClick={() => handleDeleteExhibition(record.exhibitionId)} danger>
-          Eliminar
-        </Button>
-      ),
-    },
-  ];
+  const filteredArtRooms = artRooms.filter((artRoom) =>
+    artRoom.name.toLowerCase().includes(searchTextArtRoom.toLowerCase()) ||
+    artRoom.artRoomId.toString().includes(searchTextArtRoom)
+  );
 
-  // Columnas de las salas de arte (artRoom)
-  const artRoomColumns = [
-    {
-      title: "Nº Sala",
-      dataIndex: "artRoomId",
-      key: "artRoomId",
-    },
-    { title: "Nombre de la Sala", dataIndex: "name", key: "name" },
-    { title: "Descripción de la Sala", dataIndex: "description", key: "description" },
-    {
-      title: "Acciones",
-      key: "actions",
-      render: (_: any, record: ArtRoomType) => (
-        <Button onClick={() => handleDeleteArtRoom(record.artRoomId)} danger>
-          Eliminar
-        </Button>
-      ),
-    },
-  ];
-
-  if (loading) return <div>Cargando exposiciones...</div>;
+  if (loading) return <div>Cargando datos...</div>;
   if (error) return <div>{error}</div>;
 
   return (
     <div>
       <h3>Gestión de Exposiciones</h3>
-      <Table
-        columns={exhibitionColumns}
-        dataSource={exhibitions}
-        rowKey="exhibitionId"
-        pagination={{ pageSize: 5 }}
+      <Search
+        placeholder="Buscar por nombre o número de sala"
+        onChange={(e) => setSearchTextExhibition(e.target.value)}
+        style={{ marginBottom: 16 }}
       />
+      <Form form={form} component={false}>
+        <Table dataSource={filteredExhibitions} rowKey="exhibitionId" pagination={{ pageSize: 5 }}>
+          <Column title="Nombre de la Exposición" dataIndex="name" key="name"
+            render={(text, record: any) => {
+              return editingKey === record.exhibitionId ? (
+                <Form.Item name="name" style={{ margin: 0 }}>
+                  <Input />
+                </Form.Item>
+              ) : (
+                text
+              );
+            }}
+          />
+          <Column title="Descripción de la Exposición" dataIndex="description" key="description"
+            render={(text, record: any) => {
+              return editingKey === record.exhibitionId ? (
+                <Form.Item name="description" style={{ margin: 0 }}>
+                  <Input />
+                </Form.Item>
+              ) : (
+                text
+              );
+            }}
+          />
+          <Column title="Sala a la que pertenece" dataIndex={["artRoom", "artRoomId"]} key="artRoomId" />
+          <Column
+            title="Acciones"
+            key="actions"
+            render={(text, record: any) => {
+              const editable = editingKey === record.exhibitionId;
+              return editable ? (
+                <>
+                  <Button onClick={() => save(record)} icon={<SaveOutlined />} />
+                  <Button onClick={cancelEditing} icon={<CloseOutlined />} />
+                </>
+              ) : (
+                <>
+                  <Button onClick={() => startEditing(record)} icon={<EditOutlined />} />
+                  <Button onClick={() => confirmDelete(record)} icon={<DeleteOutlined />} danger />
+                </>
+              );
+            }}
+          />
+        </Table>
+      </Form>
+
       <h3>Salas de Arte</h3>
-      <Table
-        columns={artRoomColumns}
-        dataSource={[...new Map(exhibitions.map((exhibition) => [exhibition.artRoom.artRoomId, exhibition.artRoom])).values()]}
-        rowKey="artRoomId"
-        pagination={{ pageSize: 5 }}
+      <Search
+        placeholder="Buscar por nombre o número de sala"
+        onChange={(e) => setSearchTextArtRoom(e.target.value)}
+        style={{ marginBottom: 16 }}
       />
+      <Form form={form} component={false}>
+        <Table dataSource={filteredArtRooms} rowKey="artRoomId" pagination={{ pageSize: 5 }}>
+          <Column title="Nº Sala" dataIndex="artRoomId" key="artRoomId" />
+          <Column title="Nombre de la Sala" dataIndex="name" key="name"
+            render={(text, record: any) => {
+              return editingKey === record.artRoomId ? (
+                <Form.Item name="name" style={{ margin: 0 }}>
+                  <Input />
+                </Form.Item>
+              ) : (
+                text
+              );
+            }}
+          />
+          <Column title="Descripción de la Sala" dataIndex="description" key="description"
+            render={(text, record: any) => {
+              return editingKey === record.artRoomId ? (
+                <Form.Item name="description" style={{ margin: 0 }}>
+                  <Input />
+                </Form.Item>
+              ) : (
+                text
+              );
+            }}
+          />
+          <Column
+            title="Acciones"
+            key="actions"
+            render={(text, record: any) => {
+              const editable = editingKey === record.artRoomId;
+              return editable ? (
+                <>
+                  <Button onClick={() => save(record)} icon={<SaveOutlined />} />
+                  <Button onClick={cancelEditing} icon={<CloseOutlined />} />
+                </>
+              ) : (
+                <>
+                  <Button onClick={() => startEditing(record)} icon={<EditOutlined />} />
+                  <Button onClick={() => confirmDelete(record)} icon={<DeleteOutlined />} danger />
+                </>
+              );
+            }}
+          />
+        </Table>
+      </Form>
     </div>
   );
 };
 
-export default ExhibitionManagementScreen;
+export default ExhibitionsScreen;

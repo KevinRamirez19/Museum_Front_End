@@ -2,14 +2,13 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
 
-// Definir la interfaz de Exhibition y ArtRoom
 interface ArtRoomType {
   artRoomId: number;
-  location_Id: number;
+  location_Id?: number;
   collection_Id: number;
   name: string;
   description: string;
-  numberExhibitions: string;
+  numberExhibitions?: string;
 }
 
 interface ExhibitionType {
@@ -17,124 +16,88 @@ interface ExhibitionType {
   name: string;
   description: string;
   artRoomId: number;
-  artRoom: ArtRoomType; // Relación con la sala de arte
-  fechaDeInicio: string;
-  fechaFinal: string;
-  estado: string;
+  artRoom: ArtRoomType;
+  fechaDeInicio?: string;
+  fechaFinal?: string;
+  estado?: string;
 }
 
 const useExhibitions = () => {
   const [exhibitions, setExhibitions] = useState<ExhibitionType[]>([]);
+  const [artRooms, setArtRooms] = useState<ArtRoomType[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Función para obtener las exhibiciones
   const fetchExhibitions = async () => {
     try {
       const response = await axios.get<ExhibitionType[]>("https://nationalmuseum2.somee.com/api/Exhibition");
       setExhibitions(response.data);
-      setError(null);
     } catch (err) {
-      setError("Error al cargar los datos de exhibiciones.");
-      console.error("Error al cargar los datos de exhibiciones:", err);
+      setError("Error al cargar las exposiciones.");
     } finally {
       setLoading(false);
     }
   };
 
-  // Función para agregar una exhibición
-  const addExhibition = async (newExhibition: ExhibitionType) => {
+  const fetchArtRooms = async () => {
     try {
-      const requestBody = {
-        name: newExhibition.name,
-        description: newExhibition.description,
-        artRoomId: newExhibition.artRoomId,
-        fechaDeInicio: dayjs(newExhibition.fechaDeInicio).toISOString(),
-        fechaFinal: dayjs(newExhibition.fechaFinal).toISOString(),
-        estado: newExhibition.estado,
-      };
-
-      await axios.post("https://nationalmuseum2.somee.com/api/Exhibition", requestBody);
-      setExhibitions((prevExhibitions) => [...prevExhibitions, newExhibition]);
-      return true;
+      const response = await axios.get<ArtRoomType[]>("https://nationalmuseum2.somee.com/api/ArtRoom");
+      setArtRooms(response.data);
     } catch (err) {
-      setError("Error al agregar la exhibición.");
-      console.error("Error al agregar la exhibición:", err);
-      return false;
+      setError("Error al cargar las salas de arte.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Función para actualizar una exhibición
   const updateExhibition = async (updatedExhibition: ExhibitionType) => {
     try {
-      const requestBody = {
-        exhibitionId: updatedExhibition.exhibitionId,
-        name: updatedExhibition.name,
-        description: updatedExhibition.description,
-        artRoomId: updatedExhibition.artRoomId,
-        fechaDeInicio: dayjs(updatedExhibition.fechaDeInicio).toISOString(),
-        fechaFinal: dayjs(updatedExhibition.fechaFinal).toISOString(),
-        estado: updatedExhibition.estado,
-      };
-
-      await axios.put("https://nationalmuseum2.somee.com/api/Exhibition", requestBody);
-      setExhibitions((prevExhibitions) =>
-        prevExhibitions.map((exhibition) =>
-          exhibition.exhibitionId === updatedExhibition.exhibitionId ? updatedExhibition : exhibition
-        )
-      );
-      return true;
+      await axios.put("https://nationalmuseum2.somee.com/api/Exhibition", updatedExhibition);
+      setExhibitions((prev) => prev.map((e) => (e.exhibitionId === updatedExhibition.exhibitionId ? updatedExhibition : e)));
     } catch (err) {
-      setError("Error al actualizar la exhibición.");
-      console.error("Error al actualizar la exhibición:", err);
-      return false;
+      setError("Error al actualizar la exposición.");
     }
   };
 
-  // Función para eliminar una exhibición
+  const updateArtRoom = async (updatedArtRoom: ArtRoomType) => {
+    try {
+      await axios.put("https://nationalmuseum2.somee.com/api/ArtRoom", updatedArtRoom);
+      setArtRooms((prev) => prev.map((a) => (a.artRoomId === updatedArtRoom.artRoomId ? updatedArtRoom : a)));
+    } catch (err) {
+      setError("Error al actualizar la sala de arte.");
+    }
+  };
+
   const deleteExhibition = async (exhibitionId: number) => {
     try {
       await axios.delete(`https://nationalmuseum2.somee.com/api/Exhibition/${exhibitionId}`);
-      setExhibitions((prevExhibitions) =>
-        prevExhibitions.filter((exhibition) => exhibition.exhibitionId !== exhibitionId)
-      );
-      return true;
+      setExhibitions((prev) => prev.filter((e) => e.exhibitionId !== exhibitionId));
     } catch (err) {
-      setError("Error al eliminar la exhibición.");
-      console.error("Error al eliminar la exhibición:", err);
-      return false;
+      setError("Error al eliminar la exposición.");
     }
   };
 
-  // Función para eliminar una sala de arte (ArtRoom)
   const deleteArtRoom = async (artRoomId: number) => {
     try {
       await axios.delete(`https://nationalmuseum2.somee.com/api/ArtRoom/${artRoomId}`);
-      // Eliminar las exposiciones asociadas a la sala de arte también, si es necesario
-      setExhibitions((prevExhibitions) =>
-        prevExhibitions.filter(
-          (exhibition) => exhibition.artRoom.artRoomId !== artRoomId
-        )
-      );
-      return true;
+      setArtRooms((prev) => prev.filter((a) => a.artRoomId !== artRoomId));
     } catch (err) {
       setError("Error al eliminar la sala de arte.");
-      console.error("Error al eliminar la sala de arte:", err);
-      return false;
     }
   };
 
-  // Cargar datos al montar el hook
   useEffect(() => {
     fetchExhibitions();
+    fetchArtRooms();
   }, []);
 
   return {
     exhibitions,
+    artRooms,
     loading,
     error,
-    addExhibition,
     updateExhibition,
+    updateArtRoom,
     deleteExhibition,
     deleteArtRoom,
   };
