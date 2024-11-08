@@ -15,7 +15,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-image: url('https://upload.wikimedia.org/wikipedia/commons/1/14/Entrada_Principal_del_Museo_Nacional_de_Colombia.jpg'); /* URL de la imagen de fondo */
+  background-image: url('https://upload.wikimedia.org/wikipedia/commons/1/14/Entrada_Principal_del_Museo_Nacional_de_Colombia.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -24,7 +24,9 @@
   text-align: center;
   position: relative;
   z-index: 1;
-  min-height: 60vh; /* Altura mínima de la sección */
+  min-height: 60vh;
+  opacity: 0;
+  animation: fadeIn 1.5s ease-out forwards;
 }
 
 /* Fondo de overlay */
@@ -35,15 +37,27 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5); /* Oscurece la imagen de fondo */
+  background: rgba(0, 0, 0, 0.5);
   z-index: -1;
 }
 
+/* Título de bienvenida */
 .welcome-title {
   opacity: 0;
   transform: translateY(-20px);
   animation: fadeInUp 0.6s forwards;
   animation-delay: 0.2s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes fadeInUp {
@@ -107,6 +121,7 @@
   overflow: hidden;
   transition: transform 0.3s, box-shadow 0.3s;
   text-align: left;
+  cursor: pointer;
 }
 
 .art-room-card:hover {
@@ -114,13 +129,16 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
-
-/* Imagen de la sala de arte */
+/* Imagen de la sala de arte con efecto de zoom en hover */
 .art-room-image {
   width: 100%;
   height: 180px;
   object-fit: cover;
-  border-bottom: 2px solid #e9ecef;
+  transition: transform 0.3s ease;
+}
+
+.art-room-card:hover .art-room-image {
+  transform: scale(1.1);
 }
 
 /* Contenedor de la información de la sala */
@@ -142,6 +160,18 @@
   gap: 8px;
   margin: 0;
   margin-bottom: 8px;
+  transition: color 0.3s ease;
+}
+
+/* Efecto en el icono con rotación */
+.art-room-title svg {
+  color: #4c8bf5;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.art-room-card:hover .art-room-title svg {
+  color: #ffd700;
+  transform: rotate(20deg);
 }
 
 /* Descripción de la sala de arte */
@@ -151,10 +181,6 @@
   line-height: 1.5;
 }
 
-/* Efecto en el icono */
-.art-room-title svg {
-  color: #4c8bf5; /* Color del icono */
-}
 /* Contenedor de resumen de la sala */
 .art-room-summary {
   margin-top: 20px;
@@ -166,22 +192,7 @@
   max-width: 600px;
 }
 
-/* Botón de cerrar */
-.close-summary {
-  background-color: #ffd700;
-  color: #333;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 16px;
-  cursor: pointer;
-  margin-top: 10px;
-  transition: background-color 0.3s ease;
-}
-
-.close-summary:hover {
-  background-color: #e6b800;
-}
-  /* Fondo de la ventana emergente */
+/* Fondo de la ventana emergente */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -191,7 +202,7 @@
   background-color: rgba(96, 96, 96, 0.7);
   display: flex;
   align-items: center;
-  justify-content: center;  
+  justify-content: center;
   z-index: 1000;
 }
 
@@ -207,7 +218,7 @@
   position: relative;
 }
 
-/* Botón de cerrar la ventana emergente */
+/* Botón de cerrar la ventana emergente con efecto de latido */
 .close-modal {
   background-color: #ffd700;
   color: #333;
@@ -217,8 +228,18 @@
   cursor: pointer;
   margin-top: 15px;
   transition: background-color 0.3s ease;
+  animation: heartbeat 1.5s infinite;
 }
 
 .close-modal:hover {
   background-color: #e6b800;
+}
+
+@keyframes heartbeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
 }
