@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Table, Input, Button, Popconfirm, message } from "antd";
 import { PieChart, Legend, Pie, Cell, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from "recharts";
 import useGameStates from "../../../hooks/useGameStates";
@@ -35,7 +35,7 @@ const GameStateReportScreen = () => {
     {
       title: "Acciones",
       key: "actions",
-      render: (text: any, record: any) => (
+      render: (_: any, record: any) => (
         <Popconfirm
           title="¿Estás seguro de eliminar este escenario?"
           onConfirm={() => handleDelete(record.scenaryId)}
@@ -80,7 +80,7 @@ const handleDelete = async (scenaryId: number) => {
       <ResponsiveContainer width="100%" height={300}>
         <PieChart>
           <Pie data={chartData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} fill="#8884d8" label>
-            {chartData.map((entry, index) => (
+            {chartData.map((_, index) => (
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
             ))}
           </Pie>

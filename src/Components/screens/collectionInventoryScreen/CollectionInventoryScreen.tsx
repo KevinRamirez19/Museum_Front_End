@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Table, Input, Button, Popconfirm, message, Modal, Form } from "antd";
-import axios from "axios";
 import useCollections from "../../../hooks/useCollection";
 import "./CollectionInventoryScreen.css";
 import { Collection } from "../../../hooks/useCollection";
@@ -59,7 +58,7 @@ const CollectionTable = () => {
     {
       title: "Acciones",
       key: "actions",
-      render: (text: any, record: any) => (
+      render: (_: any, record: any) => (
         <>
           <Button type="link" onClick={() => showEditModal(record)}>
             Editar

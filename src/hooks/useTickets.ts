@@ -1,12 +1,15 @@
-import { useState, useEffect } from "react"; 
+import { useState, useEffect } from "react";
 import axios from "axios";
+import dayjs from "dayjs";
 
+// Definir la interfaz de un Ticket
 interface Ticket {
   ticketId: number;
   visitDate: string;
   ticketType: { ticketTypeId: number; ticketType: string };
   paymentMethod: { paymentMethodId: number; paymentMethod: string };
   user: {
+    user_Id: number;
     names: string;
     lastNames: string;
     identificationNumber: string;
@@ -14,8 +17,21 @@ interface Ticket {
   employeeId: number;
 }
 
+// Definir interfaces para los tipos de tickets y métodos de pago
+interface TicketType {
+  ticketTypeId: number;
+  ticketType: string;
+}
+
+interface PaymentMethod {
+  paymentMethodId: number;
+  paymentMethod: string;
+}
+
 const useTickets = () => {
   const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [ticketTypes, setTicketTypes] = useState<TicketType[]>([]);
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -33,20 +49,40 @@ const useTickets = () => {
     }
   };
 
+  // Función para obtener los tipos de tickets
+  const fetchTicketTypes = async () => {
+    try {
+      const response = await axios.get<TicketType[]>("https://nationalmuseum2.somee.com/api/TicketType");
+      setTicketTypes(response.data);
+    } catch (err) {
+      console.error("Error al cargar los tipos de ticket:", err);
+    }
+  };
+
+  // Función para obtener los métodos de pago
+  const fetchPaymentMethods = async () => {
+    try {
+      const response = await axios.get<PaymentMethod[]>("https://nationalmuseum2.somee.com/api/PaymentMethod");
+      setPaymentMethods(response.data);
+    } catch (err) {
+      console.error("Error al cargar los métodos de pago:", err);
+    }
+  };
+
   // Función para actualizar un ticket
   const updateTicket = async (updatedTicket: Ticket) => {
     try {
       const requestBody = {
         ticketId: updatedTicket.ticketId,
-        user_Id: Number(updatedTicket.user.identificationNumber), // Asegúrate de que esto es un número
-        visitDate: updatedTicket.visitDate,
+        user_Id: updatedTicket.user.user_Id,
+        visitDate: dayjs(updatedTicket.visitDate).toISOString(),
         ticketType_Id: updatedTicket.ticketType.ticketTypeId,
         paymentMethod_Id: updatedTicket.paymentMethod.paymentMethodId,
         employeeId: updatedTicket.employeeId,
       };
-  
-      console.log("Request body:", requestBody); // Verifica los datos enviados
-  
+
+      console.log("Request body:", requestBody);
+
       await axios.put("https://nationalmuseum2.somee.com/api/Tickets", requestBody);
       setTickets((prevTickets) =>
         prevTickets.map((ticket) => (ticket.ticketId === updatedTicket.ticketId ? updatedTicket : ticket))
@@ -63,7 +99,7 @@ const useTickets = () => {
   const deleteTicket = async (ticketId: number) => {
     try {
       await axios.delete(`https://nationalmuseum2.somee.com/api/Tickets/${ticketId}`);
-      setTickets((prevTickets) => prevTickets.filter(ticket => ticket.ticketId !== ticketId));
+      setTickets((prevTickets) => prevTickets.filter((ticket) => ticket.ticketId !== ticketId));
       return true;
     } catch (err) {
       setError("Error al eliminar el ticket.");
@@ -72,11 +108,22 @@ const useTickets = () => {
     }
   };
 
+  // Cargar datos al montar el hook
   useEffect(() => {
     fetchTickets();
+    fetchTicketTypes();
+    fetchPaymentMethods();
   }, []);
 
-  return { tickets, loading, error, updateTicket, deleteTicket };
+  return {
+    tickets,
+    ticketTypes,
+    paymentMethods,
+    loading,
+    error,
+    updateTicket,
+    deleteTicket,
+  };
 };
 
 export default useTickets;
