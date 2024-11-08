@@ -112,8 +112,8 @@ function ExhibitionsScreens() {
   };
 
   const handleShowDetails = (record: ExhibitionDataType) => {
-    setSelectedExhibition(record);
-    setDetailsModalVisible(true);
+    setSelectedExhibition(record);  // Asigna la exhibición seleccionada al estado
+    setDetailsModalVisible(true);  // Muestra el modal de detalles
   };
 
   const tableColumns = [
@@ -186,6 +186,7 @@ function ExhibitionsScreens() {
         Crear Nueva Exhibición
       </Button>
 
+      {/* Modal para agregar o actualizar una exhibición */}
       <Modal
         title={<span style={{ color: "#4caf50" }}>{isEditing ? "Actualizar Exhibición" : "Agregar Nueva Exhibición"}</span>}
         visible={isModalVisible}
@@ -197,32 +198,32 @@ function ExhibitionsScreens() {
           <Form.Item
             label="Nombre"
             name="nombre"
-            rules={[{ required: true, message: 'Por favor ingresa el nombre de la exhibición' }]}>
+            rules={[{ required: true, message: 'Por favor ingresa el nombre de la exhibición' }]} >
             <Input placeholder="Nombre" />
           </Form.Item>
           <Form.Item
             label="Fecha de Inicio"
             name="fechaDeInicio"
-            rules={[{ required: true, message: 'Por favor ingresa la fecha de inicio' }]}>
+            rules={[{ required: true, message: 'Por favor ingresa la fecha de inicio' }]} >
             <Input placeholder="Fecha de Inicio" type="text" />
           </Form.Item>
           <Form.Item
             label="Fecha Final"
             name="fechaFinal"
-            rules={[{ required: true, message: 'Por favor ingresa la fecha final' }]}>
+            rules={[{ required: true, message: 'Por favor ingresa la fecha final' }]} >
             <Input placeholder="Fecha Final" type="text" />
           </Form.Item>
           <Form.Item
             label="Estado"
             name="estado"
-            rules={[{ required: true, message: 'Por favor ingresa el estado' }]}>
+            rules={[{ required: true, message: 'Por favor ingresa el estado' }]} >
             <Input placeholder="Estado" />
           </Form.Item>
           <Form.Item
             label="Descripción"
             name="description">
             <Input.TextArea placeholder="Descripción de la exhibición" />
-          </Form.Item>
+          </Form.Item>  
           <Form.Item>
             <Button
               type="primary"
@@ -234,9 +235,33 @@ function ExhibitionsScreens() {
         </Form>
       </Modal>
 
+      {/* Modal para ver detalles de la exhibición */}
+      <Modal
+        title="Detalles de la Exhibición"
+        visible={detailsModalVisible}  // Usa el estado para mostrar/ocultar el modal
+        onCancel={() => setDetailsModalVisible(false)}  // Cierra el modal
+        footer={null}
+        className="exhibition-details-modal"
+      >
+        {selectedExhibition ? (
+          <div>
+            <p><strong>Nombre:</strong> {selectedExhibition.nombre}</p>
+            <p><strong>Fecha de Inicio:</strong> {selectedExhibition.fechaDeInicio}</p>
+            <p><strong>Fecha Final:</strong> {selectedExhibition.fechaFinal}</p>
+            <p><strong>Estado:</strong> {selectedExhibition.estado}</p>
+            <p><strong>Descripción:</strong> {selectedExhibition.description}</p>
+            <p><strong>Sala:</strong> {selectedExhibition.artRoom.name}</p>
+            <p><strong>Descripción de Sala:</strong> {selectedExhibition.artRoom.description}</p>
+          </div>
+        ) : (
+          <p>Cargando detalles...</p>
+        )}
+      </Modal>
+
+      {/* Tabla de Exhibiciones */}
       <Table<ExhibitionDataType>
         columns={tableColumns}
-        dataSource={exhibitionsData}  // Usa exhibitionsData en lugar de exhibitions
+        dataSource={exhibitionsData}
         loading={loading}
         rowKey="exhibitionId"
         pagination={{ pageSize: 5 }}

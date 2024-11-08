@@ -74,6 +74,6 @@ export const useExhibition = () => {
   useEffect(() => {
     fetchExhibitions();
   }, []);
-
+  console.log(exhibitions);
   return { exhibitions, loading, error, fetchExhibitions, addExhibition, deleteExhibition };
 };
