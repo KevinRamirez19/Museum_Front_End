@@ -1,21 +1,47 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Table, Input, Modal, message, Button, DatePicker, Select } from "antd";
 import useTickets from "../../../hooks/useTickets";
 import dayjs from "dayjs";
 
 const { Option } = Select;
 
-const VisitorManagementScreen = () => {
-  const { tickets, loading, error, updateTicket, deleteTicket } = useTickets();
-  const [editingKey, setEditingKey] = useState<number | null>(null);
-  const [editedTicket, setEditedTicket] = useState<any>(null);
+// Definir Ticket
+interface Ticket {
+  ticketId: number;
+  visitDate: string;
+  ticketType: { ticketTypeId: number; ticketType: string };
+  paymentMethod: { paymentMethodId: number; paymentMethod: string };
+  user: {
+    user_Id: number;
+    names: string;
+    lastNames: string;
+    identificationNumber: string;
+  };
+  employeeId: number;
+}
 
-  const edit = (record: any) => {
+const VisitorManagementScreen = () => {
+  const {
+    tickets,
+    ticketTypes,
+    paymentMethods,
+    loading,
+    error,
+    updateTicket,
+    deleteTicket,
+  } = useTickets();
+  const [editingKey, setEditingKey] = useState<number | null>(null);
+  const [editedTicket, setEditedTicket] = useState<Ticket | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string>(""); // Estado para filtro de búsqueda
+
+  const edit = (record: Ticket) => {
     setEditingKey(record.ticketId);
     setEditedTicket({ ...record });
   };
 
   const save = async () => {
+    if (!editedTicket) return;
+
     Modal.confirm({
       title: "¿Está seguro de que desea guardar los cambios?",
       onOk: async () => {
@@ -23,6 +49,7 @@ const VisitorManagementScreen = () => {
         if (success) {
           message.success("Cambios guardados exitosamente");
           setEditingKey(null);
+          setEditedTicket(null);
         } else {
           message.error("Error al guardar los cambios");
         }
@@ -33,7 +60,6 @@ const VisitorManagementScreen = () => {
       },
     });
   };
-  
 
   const cancel = () => {
     setEditingKey(null);
@@ -43,12 +69,12 @@ const VisitorManagementScreen = () => {
   const handleFieldChange = (value: any, field: string) => {
     if (field === "ticketType" || field === "paymentMethod") {
       setEditedTicket({
-        ...editedTicket,
-        [field]: { [`${field}Id`]: value },
+        ...editedTicket!,
+        [field]: { ...editedTicket![field], [`${field}Id`]: value },
       });
     } else {
       setEditedTicket({
-        ...editedTicket,
+        ...editedTicket!,
         [field]: value,
       });
     }
@@ -71,19 +97,25 @@ const VisitorManagementScreen = () => {
     });
   };
 
+  // Filtrar tickets por nombre
+  const filteredTickets = tickets.filter((ticket) => {
+    const fullName = `${ticket.user.names} ${ticket.user.lastNames}`.toLowerCase();
+    return fullName.includes(searchTerm.toLowerCase());
+  });
+
   const ticketColumns = [
     { title: "ID Ticket", dataIndex: "ticketId", key: "ticketId" },
     {
       title: "Usuario",
       dataIndex: "user",
       key: "userName",
-      render: (_: any, record: any) => `${record.user.names} ${record.user.lastNames}`,
+      render: (_: any, record: Ticket) => `${record.user.names} ${record.user.lastNames}`,
     },
     {
       title: "Fecha de Visita",
       dataIndex: "visitDate",
       key: "visitDate",
-      render: (_: any, record: any) => (
+      render: (_: any, record: Ticket) =>
         editingKey === record.ticketId ? (
           <DatePicker
             value={dayjs(editedTicket?.visitDate)}
@@ -91,71 +123,79 @@ const VisitorManagementScreen = () => {
           />
         ) : (
           formatDate(record.visitDate)
-        )
-      ),
+        ),
     },
     {
       title: "Tipo de Ticket",
       dataIndex: ["ticketType", "ticketType"],
       key: "ticketType",
-      render: (_: any, record: any) => (
+      render: (_: any, record: Ticket) =>
         editingKey === record.ticketId ? (
           <Select
             value={editedTicket?.ticketType?.ticketTypeId}
             onChange={(value) => handleFieldChange(value, "ticketType")}
             style={{ width: 200 }}
           >
-            <Option value={7}>Ticket para Exposiciones Temporales</Option>
-            <Option value={8}>Ticket General</Option>
+            {ticketTypes.map((type) => (
+              <Option key={type.ticketTypeId} value={type.ticketTypeId}>
+                {type.ticketType}
+              </Option>
+            ))}
           </Select>
         ) : (
           record.ticketType.ticketType
-        )
-      ),
+        ),
     },
     {
       title: "Método de Pago",
       dataIndex: ["paymentMethod", "paymentMethod"],
       key: "paymentMethod",
-      render: (_: any, record: any) => (
+      render: (_: any, record: Ticket) =>
         editingKey === record.ticketId ? (
           <Select
             value={editedTicket?.paymentMethod?.paymentMethodId}
             onChange={(value) => handleFieldChange(value, "paymentMethod")}
             style={{ width: 200 }}
           >
-            <Option value={1}>Pago en Efectivo</Option>
-            <Option value={2}>Pago con Tarjeta</Option>
+            {paymentMethods.map((method) => (
+              <Option key={method.paymentMethodId} value={method.paymentMethodId}>
+                {method.paymentMethod}
+              </Option>
+            ))}
           </Select>
         ) : (
           record.paymentMethod.paymentMethod
-        )
-      ),
+        ),
     },
     {
       title: "Empleado",
       dataIndex: "employeeId",
       key: "employee",
-      render: (_: any, record: any) => record.user.identificationNumber,
+      render: (_: any, record: Ticket) => record.user.identificationNumber,
     },
     {
       title: "Acciones",
       key: "actions",
-      render: (_: any, record: any) => (
+      render: (_: any, record: Ticket) =>
         editingKey === record.ticketId ? (
           <>
-            <Button onClick={save} type="link">Guardar</Button>
-            <Button onClick={cancel} type="link">Cancelar</Button>
+            <Button onClick={save} type="link">
+              Guardar
+            </Button>
+            <Button onClick={cancel} type="link">
+              Cancelar
+            </Button>
           </>
         ) : (
           <>
-            <Button onClick={() => edit(record)} type="link">Editar</Button>
+            <Button onClick={() => edit(record)} type="link">
+              Editar
+            </Button>
             <Button onClick={() => handleDelete(record.ticketId)} type="link" danger>
               Eliminar
             </Button>
           </>
-        )
-      ),
+        ),
     },
   ];
 
@@ -170,9 +210,15 @@ const VisitorManagementScreen = () => {
   return (
     <div>
       <h3>Gestión de Visitantes</h3>
+      <Input
+        placeholder="Buscar por nombre"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        style={{ marginBottom: 20, width: 300 }}
+      />
       <Table
         columns={ticketColumns}
-        dataSource={tickets}
+        dataSource={filteredTickets}  // Usamos los tickets filtrados
         rowKey="ticketId"
         pagination={{ pageSize: 5 }}
       />
