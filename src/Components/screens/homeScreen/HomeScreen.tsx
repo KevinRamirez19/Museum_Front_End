@@ -12,15 +12,15 @@ interface ArtRoom {
 }
 
 const artRooms: ArtRoom[] = [
-  { nombre: "arte", descripcion: "Explora una rica colección de arte visual.", resumen: "El arte visual muestra la creatividad humana en todas sus formas.", icon: faPalette },
-  { nombre: "historia", descripcion: "Revive los eventos históricos de nuestra nación.", resumen: "Revive los momentos históricos que marcaron nuestra cultura y sociedad.", icon: faLandmark },
+  { nombre: "Vision", descripcion: "Conoce nuestra visión: Inspirar y preservar el patrimonio cultural de Colombia para promover identidad y diversidad.", resumen: "que el país sea una sociedad solidaria, respetuosa, que fomente la paz y que reconozca la pluralidad y democracia.", icon: faPalette },
+  { nombre: "Mision", descripcion: "El Museo Nacional de Colombia evoca los eventos históricos de nuestra nación, preservando y difundiendo su legado cultural.", resumen: "​Reconocemos que al Museo Nacional le corresponde la misión de ser un lugar de encuentro entre los ciudadanos de Colombia y el mundo con nuestros patrimonios, para dialogar, celebrar, reconocer y reflexionar sobre lo que fuimos, lo que somos y lo que seremos.", icon: faLandmark },
   { nombre: "arqueología", descripcion: "Descubre los secretos del pasado.", resumen: "Sumérgete en los descubrimientos arqueológicos y el legado de las antiguas civilizaciones.", icon: faFlask },
   { nombre: "etnografia", descripcion: "Explora la diversidad de la vida.", resumen: "Conoce la diversidad cultural y las tradiciones de nuestra sociedad.", icon: faLeaf },
 ];
 
 const artRoomImages = [
-  { nombre: "arte", image: "https://media.admagazine.com/photos/618a6acacc7069ed5077ca7c/16:9/w_1920,c_limit/69052.jpg" },
-  { nombre: "historia", image: "https://www.unir.net/wp-content/uploads/2021/11/cabecerahistoriografia-min.jpg" },
+  { nombre: "Vision", image: "https://www.museonacional.gov.co/el-museo/quienes-somos/Documents/mision.jpg" },
+  { nombre: "Mision", image: "https://www.unir.net/wp-content/uploads/2021/11/cabecerahistoriografia-min.jpg" },
   { nombre: "arqueología", image: "https://static.nationalgeographicla.com/files/styles/image_3200/public/1_archeologygallery_nationalgeographic_611691.webp?w=1190&h=884" },
   { nombre: "etnografia", image: "https://concepto.de/wp-content/uploads/2024/05/etnografia-item-8.jpeg" },
 ];
