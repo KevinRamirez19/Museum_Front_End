@@ -11,7 +11,7 @@ const EmployeesScreen = () => {
   const { employees, users, typeEmployees, workSchedules, loading, error, updateEmployee, deleteEmployee } = useEmployees();
   const [editingKey, setEditingKey] = useState<number | null>(null);
   const [form] = Form.useForm();
-  const [searchText, setSearchText] = useState("");
+  const [_, setSearchText] = useState("");
 
   // Función para obtener el nombre completo del usuario
   const getUserName = (userId: number) => {
