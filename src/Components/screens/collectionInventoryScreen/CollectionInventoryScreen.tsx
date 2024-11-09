@@ -1,68 +1,100 @@
 import { useState } from "react";
 import { Table, Input, Button, Popconfirm, message, Modal, Form } from "antd";
 import useCollections from "../../../hooks/useCollection";
-import { useAuth } from "../../../Context/AuthContext"; // Importa el contexto de autenticación
+import { useAuth } from "../../../Context/AuthContext";
 import "./CollectionInventoryScreen.css";
 import { Collection } from "../../../hooks/useCollection";
 
 const CollectionTable = () => {
   const { collections, deleteCollection, updateCollection, addCollection } = useCollections();
-  const { state } = useAuth(); // Accede al estado de autenticación
+  const { state } = useAuth();
   const [searchText, setSearchText] = useState("");
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [newCollection, setNewCollection] = useState<Collection>({ collectionId: 0, name: "", descriptiom: "" });
+  const [form] = Form.useForm();
   const [editingCollection, setEditingCollection] = useState<Collection | null>(null);
 
+  // Filtrar colecciones por nombre
   const filteredCollections = collections.filter((collection) =>
     collection.name.toLowerCase().includes(searchText.toLowerCase())
   );
 
+  // Mostrar modal para editar una colección
   const showEditModal = (collection: Collection) => {
     setEditingCollection(collection);
     setIsEditing(true);
-    setIsModalVisible(true);
+    setIsModalOpen(true);
+    form.setFieldsValue(collection);
   };
 
+  // Manejar la actualización de una colección
   const handleUpdateCollection = async () => {
-    if (editingCollection) {
-      const success = await updateCollection(editingCollection);
-      if (success) {
-        message.success("Colección actualizada correctamente.");
-        setIsModalVisible(false);
-        setEditingCollection(null);
-        setIsEditing(false);
-      } else {
-        message.error("Error al actualizar la colección.");
+    try {
+      const updatedCollection = await form.validateFields();
+      if (editingCollection) {
+        const success = await updateCollection({ ...editingCollection, ...updatedCollection });
+        if (success) {
+          message.success("Colección actualizada correctamente.");
+          closeModal();
+        } else {
+          message.error("Error al actualizar la colección.");
+        }
       }
+    } catch {
+      message.error("Por favor complete todos los campos requeridos.");
     }
   };
 
+  // Mostrar modal para agregar una nueva colección
   const showModal = () => {
     setIsEditing(false);
-    setIsModalVisible(true);
+    setIsModalOpen(true);
+    form.resetFields();
   };
 
+  // Manejar la creación de una nueva colección
   const handleAddCollection = async () => {
-    const success = await addCollection(newCollection); // Usar el hook para agregar la colección
-    if (success) {
-      message.success("Colección agregada correctamente.");
-      setIsModalVisible(false);
-      setNewCollection({ collectionId: 0, name: "", descriptiom: "" });
-    } else {
-      message.error("Error al agregar la colección.");
+    try {
+      const newCollection = await form.validateFields();
+      const success = await addCollection(newCollection);
+      if (success) {
+        message.success("Colección agregada correctamente.");
+        closeModal();
+      } else {
+        message.error("Error al agregar la colección.");
+      }
+    } catch {
+      message.error("Por favor complete todos los campos requeridos.");
     }
   };
 
+  // Cerrar modal y resetear formulario
+  const closeModal = () => {
+    setIsModalOpen(false);
+    form.resetFields();
+    setEditingCollection(null);
+  };
+
+  // Manejar la eliminación de una colección
+  const handleDelete = async (collectionId: number) => {
+    const success = await deleteCollection(collectionId);
+    if (success) {
+      message.success("Colección eliminada correctamente.");
+    } else {
+      message.error("No se pudo eliminar la colección.");
+    }
+  };
+
+  // Columnas de la tabla
   const collectionColumns = [
     { title: "Nombre", dataIndex: "name", key: "name" },
     { title: "Descripción", dataIndex: "descriptiom", key: "descriptiom" },
     {
       title: "Acciones",
       key: "actions",
-      render: (_: any, record: any) => (
+      render: (_: any, record: Collection) => (
         <>
-          {/* Solo mostrar los botones si el usuario es Admin */}
+          {/* Permitir acciones solo si el usuario es Admin (tipo 1) */}
           {state.user?.userType === 1 && (
             <>
               <Button type="link" onClick={() => showEditModal(record)}>
@@ -85,15 +117,6 @@ const CollectionTable = () => {
     },
   ];
 
-  const handleDelete = async (collectionId: number) => {
-    const success = await deleteCollection(collectionId);
-    if (success) {
-      message.success("Colección eliminada correctamente.");
-    } else {
-      message.error("No se pudo eliminar la colección.");
-    }
-  };
-
   return (
     <div>
       <Input
@@ -102,12 +125,14 @@ const CollectionTable = () => {
         onChange={(e) => setSearchText(e.target.value)}
         style={{ width: 300, marginBottom: 20 }}
       />
-      {/* Solo permitir agregar colección si el usuario es Admin */}
-      {state.user?.userType === 1 && (
+
+      {/* Permitir agregar colección si el usuario es Admin (tipo 1) o de tipo 5 */}
+      {(state.user?.userType === 1 || state.user?.userType === 5) && (
         <Button type="primary" onClick={showModal} style={{ marginBottom: 20 }}>
           Agregar Colección
         </Button>
       )}
+
       <Table
         columns={collectionColumns}
         dataSource={filteredCollections}
@@ -117,32 +142,26 @@ const CollectionTable = () => {
 
       <Modal
         title={isEditing ? "Editar Colección" : "Agregar Nueva Colección"}
-        visible={isModalVisible}
+        open={isModalOpen}
         onOk={isEditing ? handleUpdateCollection : handleAddCollection}
-        onCancel={() => setIsModalVisible(false)}
+        onCancel={closeModal}
         okText={isEditing ? "Actualizar" : "Agregar"}
         cancelText="Cancelar"
       >
-        <Form layout="vertical">
-          <Form.Item label="Nombre">
-            <Input
-              value={isEditing ? editingCollection?.name : newCollection.name}
-              onChange={(e) =>
-                isEditing
-                  ? setEditingCollection({ ...editingCollection, name: e.target.value } as Collection)
-                  : setNewCollection({ ...newCollection, name: e.target.value })
-              }
-            />
+        <Form form={form} layout="vertical">
+          <Form.Item
+            name="name"
+            label="Nombre"
+            rules={[{ required: true, message: "Por favor ingrese el nombre de la colección" }]}
+          >
+            <Input />
           </Form.Item>
-          <Form.Item label="Descripción">
-            <Input
-              value={isEditing ? editingCollection?.descriptiom : newCollection.descriptiom}
-              onChange={(e) =>
-                isEditing
-                  ? setEditingCollection({ ...editingCollection, descriptiom: e.target.value } as Collection)
-                  : setNewCollection({ ...newCollection, descriptiom: e.target.value })
-              }
-            />
+          <Form.Item
+            name="descriptiom"
+            label="Descripción"
+            rules={[{ required: true, message: "Por favor ingrese la descripción" }]}
+          >
+            <Input />
           </Form.Item>
         </Form>
       </Modal>

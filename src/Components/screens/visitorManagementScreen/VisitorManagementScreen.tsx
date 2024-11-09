@@ -102,7 +102,6 @@ const VisitorManagementScreen = () => {
   });
 
   const ticketColumns = [
-    { title: "ID Ticket", dataIndex: "ticketId", key: "ticketId" },
     {
       title: "Usuario",
       dataIndex: "user",

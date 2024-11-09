@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Table, Button, message, Modal, Input, Form, Select, DatePicker } from "antd";
 import { EditOutlined, SaveOutlined, CloseOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
-import useEmployees from "../../../hooks/useEmployees"; 
+import useEmployees from "../../../hooks/useEmployees";
 import { useAuth } from "../../../Context/AuthContext";
 
 const { Column } = Table;
@@ -16,37 +16,31 @@ const EmployeesScreen = () => {
   const [searchText, setSearchText] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  // Función para obtener el nombre completo del usuario
   const getUserName = (userId: number) => {
     const user = users.find((u) => u.userId === userId);
     return user ? `${user.names} ${user.lastNames}` : "Desconocido";
   };
 
-  // Función para obtener el tipo de empleado
   const getTypeEmployee = (typeEmployeeId: number) => {
     const typeEmployee = typeEmployees.find((t) => t.typeEmployeeId === typeEmployeeId);
     return typeEmployee ? typeEmployee.typeEmployee : "Desconocido";
   };
 
-  // Función para obtener el nombre del horario de trabajo
   const getWorkSchedule = (workSheduleId: number) => {
     const schedule = workSchedules.find((w) => w.workSheduleId === workSheduleId);
     return schedule ? schedule.workShedule : "Desconocido";
   };
 
-  // Función para iniciar la edición de un registro
   const startEditing = (record: any) => {
     form.setFieldsValue({ ...record });
     setEditingKey(record.employeeId);
   };
 
-  // Función para cancelar la edición
   const cancelEditing = () => {
     setEditingKey(null);
     form.resetFields();
   };
 
-  // Función para guardar los cambios de edición
   const save = async (record: any) => {
     try {
       const updatedFields = form.getFieldsValue();
@@ -59,7 +53,6 @@ const EmployeesScreen = () => {
     }
   };
 
-  // Función para confirmar y eliminar un empleado
   const confirmDelete = (record: any) => {
     Modal.confirm({
       title: "¿Estás seguro de que deseas eliminar este empleado?",
@@ -77,17 +70,15 @@ const EmployeesScreen = () => {
     });
   };
 
-  // Función para abrir el modal de creación
   const openCreateModal = () => {
     setIsModalVisible(true);
     form.resetFields();
   };
 
-  // Función para manejar la creación de un nuevo empleado
   const handleCreate = async () => {
     try {
       const newEmployee = form.getFieldsValue();
-      newEmployee.hiringDate = newEmployee.hiringDate.format("YYYY-MM-DD"); // Formatear la fecha
+      newEmployee.hiringDate = newEmployee.hiringDate.format("YYYY-MM-DD");
       await createEmployee(newEmployee);
       setIsModalVisible(false);
       message.success("Empleado creado correctamente.");
@@ -97,7 +88,6 @@ const EmployeesScreen = () => {
     }
   };
 
-  // Filtrar empleados basado en búsqueda por nombre o horario de trabajo
   const filteredEmployees = employees.filter((employee) => {
     const userName = getUserName(employee.user_Id).toLowerCase();
     const workScheduleName = getWorkSchedule(employee.workShedule_Id).toLowerCase();
@@ -106,27 +96,29 @@ const EmployeesScreen = () => {
     return userName.includes(search) || workScheduleName.includes(search);
   });
 
+  const userType = state.user?.userType;
+
   return (
     <div>
       <h3>Gestión de Empleados</h3>
-      {state.user?.userType === 1 && (
+
+      {/* Botón de creación disponible para admin y tipo 5 */}
+      {(userType === 1 || userType === 5) && (
         <Button type="primary" onClick={openCreateModal} icon={<PlusOutlined />} style={{ marginBottom: 16 }}>
           Crear Empleado
         </Button>
       )}
+
       <Search
         placeholder="Buscar por nombre de usuario o horario de trabajo"
         onChange={(e) => setSearchText(e.target.value)}
         style={{ marginBottom: 16 }}
       />
+
       <Form form={form} component={false}>
         <Table dataSource={filteredEmployees} rowKey="employeeId" pagination={{ pageSize: 5 }} loading={loading}>
-          <Column title="Nombre de Usuario" key="user_Id"
-            render={(_, record: any) => getUserName(record.user_Id)}
-          />
-          <Column title="Tipo de Empleado" key="typeEmployee_Id"
-            render={(_, record: any) => getTypeEmployee(record.typeEmployee_Id)}
-          />
+          <Column title="Nombre de Usuario" key="user_Id" render={(_, record: any) => getUserName(record.user_Id)} />
+          <Column title="Tipo de Empleado" key="typeEmployee_Id" render={(_, record: any) => getTypeEmployee(record.typeEmployee_Id)} />
           <Column
             title="Horario de Trabajo"
             key="workShedule_Id"
@@ -165,32 +157,29 @@ const EmployeesScreen = () => {
             render={(_, record: any) => {
               const editable = editingKey === record.employeeId;
 
-              // Mostrar acciones solo si el usuario es administrador
-              if (state.user?.userType !== 1) return null;
+              // Admin puede editar y eliminar
+              if (userType === 1) {
+                return editable ? (
+                  <>
+                    <Button onClick={() => save(record)} icon={<SaveOutlined />} />
+                    <Button onClick={cancelEditing} icon={<CloseOutlined />} />
+                  </>
+                ) : (
+                  <>
+                    <Button onClick={() => startEditing(record)} icon={<EditOutlined />} />
+                    <Button onClick={() => confirmDelete(record)} icon={<DeleteOutlined />} danger />
+                  </>
+                );
+              }
 
-              return editable ? (
-                <>
-                  <Button onClick={() => save(record)} icon={<SaveOutlined />} />
-                  <Button onClick={cancelEditing} icon={<CloseOutlined />} />
-                </>
-              ) : (
-                <>
-                  <Button onClick={() => startEditing(record)} icon={<EditOutlined />} />
-                  <Button onClick={() => confirmDelete(record)} icon={<DeleteOutlined />} danger />
-                </>
-              );
+              // Tipo 5 no puede editar ni eliminar
+              return null;
             }}
           />
         </Table>
       </Form>
-      
-      {/* Modal para crear un nuevo empleado */}
-      <Modal
-        title="Crear Empleado"
-        visible={isModalVisible}
-        onCancel={() => setIsModalVisible(false)}
-        onOk={handleCreate}
-      >
+
+      <Modal title="Crear Empleado" visible={isModalVisible} onCancel={() => setIsModalVisible(false)} onOk={handleCreate}>
         <Form form={form} layout="vertical">
           <Form.Item name="user_Id" label="Usuario" rules={[{ required: true, message: "Seleccione un usuario" }]}>
             <Select placeholder="Seleccione un usuario">
@@ -225,7 +214,7 @@ const EmployeesScreen = () => {
         </Form>
       </Modal>
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
     </div>
   );
 };

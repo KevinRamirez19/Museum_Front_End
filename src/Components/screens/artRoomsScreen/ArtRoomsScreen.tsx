@@ -2,39 +2,43 @@ import { useState } from "react";
 import { Table, Button, message, Modal, Input, Form, Select } from "antd";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import useArtObjects from "../../../hooks/useArtObject";
-import { useAuth } from "../../../Context/AuthContext"; // Importa el hook de autenticación
+import { useAuth } from "../../../Context/AuthContext";
 
 const { Column } = Table;
 const { Search } = Input;
 
 const ArtObjectsScreen = () => {
   const { artObjects, loading, error, deleteArtObject, createArtObject, exhibitions, categories, states } = useArtObjects();
-  const { state } = useAuth(); // Obtén el estado de autenticación
+  const { state } = useAuth();
   const [form] = Form.useForm();
-  const [searchText, setSearchText] = useState(""); // Filtro por nombre
-  const [originText, setOriginText] = useState(""); // Filtro por origen
+  const [searchText, setSearchText] = useState("");
+  const [originText, setOriginText] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Mostrar modal para crear un nuevo objeto de arte
   const showModal = () => {
     setIsModalOpen(true);
   };
 
+  // Cerrar modal y resetear formulario
   const closeModal = () => {
     setIsModalOpen(false);
     form.resetFields();
   };
 
+  // Manejar la creación de un nuevo objeto de arte
   const handleCreate = async () => {
     try {
       const newArtObject = await form.validateFields();
       await createArtObject(newArtObject);
       message.success("Objeto de arte creado exitosamente.");
       closeModal();
-    } catch (err) {
+    } catch {
       message.error("Error al crear el objeto de arte.");
     }
   };
 
+  // Confirmar eliminación de un objeto de arte
   const confirmDelete = (record: any) => {
     Modal.confirm({
       title: `¿Está seguro de que desea eliminar el objeto de arte "${record.name}"?`,
@@ -44,22 +48,22 @@ const ArtObjectsScreen = () => {
         try {
           await deleteArtObject(record.artObjectId);
           message.success("Objeto de arte eliminado exitosamente.");
-        } catch (err) {
+        } catch {
           message.error("Error al eliminar el objeto de arte.");
         }
       },
     });
   };
 
-  // Filtrar por nombre, artista, fecha de creación, estado y origen
+  // Filtrar objetos de arte por nombre y origen
   const filteredArtObjects = artObjects.filter(
     (artObject) =>
-      artObject.name.toLowerCase().includes(searchText.toLowerCase()) && // Filtro por nombre
-      artObject.origin.toLowerCase().includes(originText.toLowerCase()) // Filtro por origen
+      artObject.name.toLowerCase().includes(searchText.toLowerCase()) &&
+      artObject.origin.toLowerCase().includes(originText.toLowerCase())
   );
 
   if (loading) return <div>Cargando datos...</div>;
-  if (error) return <div>{error}</div>;
+  if (error) return <div style={{ color: 'red' }}>{error}</div>;
 
   return (
     <div>
@@ -68,18 +72,18 @@ const ArtObjectsScreen = () => {
         <div style={{ display: "flex", width: "100%" }}>
           <Search
             placeholder="Buscar por nombre"
-            onChange={(e) => setSearchText(e.target.value)} // Filtro por nombre
+            onChange={(e) => setSearchText(e.target.value)}
             style={{ width: "48%", marginRight: "4%" }}
           />
           <Search
             placeholder="Buscar por origen"
-            onChange={(e) => setOriginText(e.target.value)} // Filtro por origen
+            onChange={(e) => setOriginText(e.target.value)}
             style={{ width: "48%" }}
           />
         </div>
 
-        {/* Mostrar el botón de agregar solo si el usuario es administrador */}
-        {state.user?.userType === 1 && (
+        {/* Permitir creación solo si el usuario es tipo 1 o 5 */}
+        {(state.user?.userType === 1 || state.user?.userType === 5) && (
           <Button type="primary" icon={<PlusOutlined />} onClick={showModal}>
             Agregar Objeto de Arte
           </Button>
@@ -104,7 +108,7 @@ const ArtObjectsScreen = () => {
           title="Acciones"
           key="actions"
           render={(_, record) => (
-            // Mostrar el botón de eliminar solo si el usuario es administrador
+            // Permitir eliminación solo si el usuario es tipo 1
             state.user?.userType === 1 && (
               <Button onClick={() => confirmDelete(record)} icon={<DeleteOutlined />} danger />
             )
@@ -114,7 +118,7 @@ const ArtObjectsScreen = () => {
 
       <Modal
         title="Agregar Nuevo Objeto de Arte"
-        open={isModalOpen} // Cambiado de `visible` a `open`
+        open={isModalOpen}
         onCancel={closeModal}
         onOk={handleCreate}
         okText="Crear"
@@ -139,7 +143,7 @@ const ArtObjectsScreen = () => {
           <Form.Item name="cost" label="Costo" rules={[{ required: true, message: "Por favor ingrese el costo" }]}>
             <Input />
           </Form.Item>
-          <Form.Item name="exhibition_Id" label="Exhibición" rules={[{ required: true, message: "Por favor seleccione la exhibición" }]}>
+          <Form.Item name="exhibition_Id" label="Exhibición" rules={[{ required: true, message: "Seleccione la exhibición" }]}>
             <Select>
               {exhibitions.map((exhibition) => (
                 <Select.Option key={exhibition.exhibitionId} value={exhibition.exhibitionId}>
@@ -148,7 +152,7 @@ const ArtObjectsScreen = () => {
               ))}
             </Select>
           </Form.Item>
-          <Form.Item name="categoryId" label="Categoría" rules={[{ required: true, message: "Por favor seleccione la categoría" }]}>
+          <Form.Item name="categoryId" label="Categoría" rules={[{ required: true, message: "Seleccione la categoría" }]}>
             <Select>
               {categories.map((category) => (
                 <Select.Option key={category.categoryId} value={category.categoryId}>
@@ -157,7 +161,7 @@ const ArtObjectsScreen = () => {
               ))}
             </Select>
           </Form.Item>
-          <Form.Item name="state_Id" label="Estado" rules={[{ required: true, message: "Por favor seleccione el estado" }]}>
+          <Form.Item name="state_Id" label="Estado" rules={[{ required: true, message: "Seleccione el estado" }]}>
             <Select>
               {states.map((state) => (
                 <Select.Option key={state.stateId} value={state.stateId}>
