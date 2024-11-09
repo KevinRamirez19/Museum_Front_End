@@ -108,7 +108,7 @@ const LoginScreen: React.FC = () => {
       {/* Modal de Registro */}
       <Modal
         title="Registrarse"
-        visible={isModalVisible}
+        open={isModalVisible}
         onCancel={handleCancel}
         footer={null}
       >

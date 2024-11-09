@@ -10,9 +10,6 @@ const ArtObjectsScreen = () => {
   const { artObjects, loading, error, deleteArtObject, createArtObject, exhibitions, categories, states } = useArtObjects();
   const [form] = Form.useForm();
   const [searchText, setSearchText] = useState(""); // Filtro por nombre
-  const [artistText, setArtistText] = useState(""); // Filtro por artista
-  const [creationDateText, setCreationDateText] = useState(""); // Filtro por fecha de creación
-  const [stateText, setStateText] = useState(""); // Filtro por estado
   const [originText, setOriginText] = useState(""); // Filtro por origen
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -56,9 +53,6 @@ const ArtObjectsScreen = () => {
   const filteredArtObjects = artObjects.filter(
     (artObject) =>
       artObject.name.toLowerCase().includes(searchText.toLowerCase()) && // Filtro por nombre
-      artObject.artist.toLowerCase().includes(artistText.toLowerCase()) && // Filtro por artista
-      artObject.creationDate.toLowerCase().includes(creationDateText.toLowerCase()) && // Filtro por fecha de creación
-      (states.find((state) => state.stateId === artObject.state_Id)?.state.toLowerCase().includes(stateText.toLowerCase()) || true) && // Filtro por estado
       artObject.origin.toLowerCase().includes(originText.toLowerCase()) // Filtro por origen
   );
 
