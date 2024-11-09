@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-
 import myApi from "../assets/lib/axios/myApi";
 
 interface User {
@@ -84,9 +83,9 @@ const useEmployees = () => {
   };
 
   // Función para actualizar un empleado
-  const updateEmployee = async (updatedEmployee: Employee) => {
+  const updateEmployee = async (_updatedEmployee: Employee) => {
     try {
-      await myApi.put(`/employees/${employees.employeesId}`, employees);
+      await myApi.put(`/employees/${employees.employeeId}`, employees);
       await fetchEmployees();
       return true;
     } catch (err) {

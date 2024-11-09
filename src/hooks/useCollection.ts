@@ -1,6 +1,5 @@
 // hooks/useCollection.ts
 import { useState, useEffect } from "react";
-import axios from "axios";
 import myApi from "../assets/lib/axios/myApi";
 
 export interface Collection {

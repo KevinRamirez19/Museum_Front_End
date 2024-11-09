@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import dayjs from "dayjs";
 import myApi from "../assets/lib/axios/myApi";
 
