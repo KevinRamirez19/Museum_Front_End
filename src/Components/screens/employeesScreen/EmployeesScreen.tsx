@@ -12,7 +12,8 @@ const EmployeesScreen = () => {
   const { employees, users, typeEmployees, workSchedules, loading, error, updateEmployee, deleteEmployee, createEmployee } = useEmployees();
   const [editingKey, setEditingKey] = useState<number | null>(null);
   const [form] = Form.useForm();
-  const [_, setSearchText] = useState("");
+  const [searchText, setSearchText] = useState("");
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   // Función para obtener el nombre completo del usuario
   const getUserName = (userId: number) => {
@@ -117,6 +118,7 @@ const EmployeesScreen = () => {
       />
       <Form form={form} component={false}>
         <Table dataSource={filteredEmployees} rowKey="employeeId" pagination={{ pageSize: 5 }} loading={loading}>
+          <Column title="ID Empleado" dataIndex="employeeId" key="employeeId" />
           <Column title="Nombre de Usuario" key="user_Id"
             render={(_, record: any) => getUserName(record.user_Id)}
           />
