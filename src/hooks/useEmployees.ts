@@ -111,6 +111,19 @@ const useEmployees = () => {
     }
   };
 
+  // Función para crear un nuevo empleado
+  const createEmployee = async (newEmployee: EmployeeType) => {
+    try {
+      setLoading(true);
+      const response = await axios.post<EmployeeType>(API_EMPLOYEES, newEmployee);
+      setEmployees((prev) => [...prev, response.data]);
+    } catch (err) {
+      setError("Error al crear el empleado.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     employees,
     users,
@@ -120,6 +133,7 @@ const useEmployees = () => {
     error,
     updateEmployee,
     deleteEmployee,
+    createEmployee, // Asegúrate de exportar la función aquí
   };
 };
 

@@ -1,17 +1,18 @@
-// src/components/EmployeesScreen.tsx
 import { useState } from "react";
-import { Table, Button, message, Modal, Input, Form } from "antd";
-import { EditOutlined, SaveOutlined, CloseOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Table, Button, message, Modal, Input, Form, Select, DatePicker } from "antd";
+import { EditOutlined, SaveOutlined, CloseOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import useEmployees from "../../../hooks/useEmployees"; // Ajusta la ruta según tu estructura de carpetas
 
 const { Column } = Table;
 const { Search } = Input;
+const { Option } = Select;
 
 const EmployeesScreen = () => {
-  const { employees, users, typeEmployees, workSchedules, loading, error, updateEmployee, deleteEmployee } = useEmployees();
+  const { employees, users, typeEmployees, workSchedules, loading, error, updateEmployee, deleteEmployee, createEmployee } = useEmployees();
   const [editingKey, setEditingKey] = useState<number | null>(null);
   const [form] = Form.useForm();
-  const [_, setSearchText] = useState("");
+  const [searchText, setSearchText] = useState("");
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   // Función para obtener el nombre completo del usuario
   const getUserName = (userId: number) => {
@@ -25,10 +26,10 @@ const EmployeesScreen = () => {
     return typeEmployee ? typeEmployee.typeEmployee : "Desconocido";
   };
 
-  // Función para obtener el horario de trabajo
+  // Función para obtener el nombre del horario de trabajo
   const getWorkSchedule = (workSheduleId: number) => {
-    const workSchedule = workSchedules.find((w) => w.workSheduleId === workSheduleId);
-    return workSchedule ? workSchedule.workShedule : "Desconocido";
+    const schedule = workSchedules.find((w) => w.workSheduleId === workSheduleId);
+    return schedule ? schedule.workShedule : "Desconocido";
   };
 
   // Función para iniciar la edición de un registro
@@ -40,12 +41,14 @@ const EmployeesScreen = () => {
   // Función para cancelar la edición
   const cancelEditing = () => {
     setEditingKey(null);
+    form.resetFields();
   };
 
   // Función para guardar los cambios de edición
   const save = async (record: any) => {
     try {
-      const updatedEmployee = { ...record, ...form.getFieldsValue() };
+      const updatedFields = form.getFieldsValue();
+      const updatedEmployee = { ...record, ...updatedFields, workShedule_Id: updatedFields.workShedule_Id };
       await updateEmployee(updatedEmployee);
       setEditingKey(null);
       message.success("Empleado actualizado correctamente.");
@@ -72,38 +75,86 @@ const EmployeesScreen = () => {
     });
   };
 
-  // Renderizado de la tabla y sus columnas
+  // Función para abrir el modal de creación
+  const openCreateModal = () => {
+    setIsModalVisible(true);
+    form.resetFields();
+  };
+
+  // Función para manejar la creación de un nuevo empleado
+  const handleCreate = async () => {
+    try {
+      const newEmployee = form.getFieldsValue();
+      newEmployee.hiringDate = newEmployee.hiringDate.format("YYYY-MM-DD"); // Formatear la fecha
+      await createEmployee(newEmployee);
+      setIsModalVisible(false);
+      message.success("Empleado creado correctamente.");
+      form.resetFields();
+    } catch {
+      message.error("Error al crear el empleado.");
+    }
+  };
+
+  // Filtrar empleados basado en búsqueda por nombre o horario de trabajo
+  const filteredEmployees = employees.filter((employee) => {
+    const userName = getUserName(employee.user_Id).toLowerCase();
+    const workScheduleName = getWorkSchedule(employee.workShedule_Id).toLowerCase();
+    const search = searchText.toLowerCase();
+
+    return userName.includes(search) || workScheduleName.includes(search);
+  });
+
   return (
     <div>
       <h3>Gestión de Empleados</h3>
+      <Button type="primary" onClick={openCreateModal} icon={<PlusOutlined />} style={{ marginBottom: 16 }}>
+        Crear Empleado
+      </Button>
       <Search
-        placeholder="Buscar por ID de empleado"
+        placeholder="Buscar por nombre de usuario o horario de trabajo"
         onChange={(e) => setSearchText(e.target.value)}
         style={{ marginBottom: 16 }}
       />
       <Form form={form} component={false}>
-        <Table dataSource={employees} rowKey="employeeId" pagination={{ pageSize: 5 }} loading={loading}>
-          <Column title="ID Empleado" dataIndex="employeeId" key="employeeId" />
+        <Table dataSource={filteredEmployees} rowKey="employeeId" pagination={{ pageSize: 5 }} loading={loading}>
           <Column title="Nombre de Usuario" key="user_Id"
             render={(_, record: any) => getUserName(record.user_Id)}
           />
           <Column title="Tipo de Empleado" key="typeEmployee_Id"
             render={(_, record: any) => getTypeEmployee(record.typeEmployee_Id)}
           />
-          <Column title="Horario de Trabajo" key="workShedule_Id"
-            render={(_, record: any) => getWorkSchedule(record.workShedule_Id)}
+          <Column
+            title="Horario de Trabajo"
+            key="workShedule_Id"
+            render={(_, record: any) => {
+              const editable = editingKey === record.employeeId;
+              return editable ? (
+                <Form.Item name="workShedule_Id" style={{ margin: 0 }}>
+                  <Select>
+                    {workSchedules.map((schedule) => (
+                      <Option key={schedule.workSheduleId} value={schedule.workSheduleId}>
+                        {schedule.workShedule}
+                      </Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              ) : (
+                getWorkSchedule(record.workShedule_Id)
+              );
+            }}
           />
           <Column
             title="Fecha de Contratación"
             dataIndex="hiringDate"
             key="hiringDate"
-            render={(hiringDate: string) => new Date(hiringDate).toLocaleDateString("es-ES", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
+            render={(hiringDate: string) =>
+              new Date(hiringDate).toLocaleDateString("es-ES", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })
+            }
           />
-          
           <Column
             title="Acciones"
             key="actions"
@@ -124,6 +175,48 @@ const EmployeesScreen = () => {
           />
         </Table>
       </Form>
+      
+      {/* Modal para crear un nuevo empleado */}
+      <Modal
+        title="Crear Empleado"
+        visible={isModalVisible}
+        onCancel={() => setIsModalVisible(false)}
+        onOk={handleCreate}
+      >
+        <Form form={form} layout="vertical">
+          <Form.Item name="user_Id" label="Usuario" rules={[{ required: true, message: "Seleccione un usuario" }]}>
+            <Select placeholder="Seleccione un usuario">
+              {users.map((user) => (
+                <Option key={user.userId} value={user.userId}>
+                  {`${user.names} ${user.lastNames}`}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item name="typeEmployee_Id" label="Tipo de Empleado" rules={[{ required: true, message: "Seleccione un tipo de empleado" }]}>
+            <Select placeholder="Seleccione el tipo de empleado">
+              {typeEmployees.map((type) => (
+                <Option key={type.typeEmployeeId} value={type.typeEmployeeId}>
+                  {type.typeEmployee}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item name="workShedule_Id" label="Horario de Trabajo" rules={[{ required: true, message: "Seleccione un horario de trabajo" }]}>
+            <Select placeholder="Seleccione un horario">
+              {workSchedules.map((schedule) => (
+                <Option key={schedule.workSheduleId} value={schedule.workSheduleId}>
+                  {schedule.workShedule}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item name="hiringDate" label="Fecha de Contratación" rules={[{ required: true, message: "Seleccione una fecha de contratación" }]}>
+            <DatePicker format="YYYY-MM-DD" />
+          </Form.Item>
+        </Form>
+      </Modal>
+
       {error && <p style={{ color: 'red' }}>{error}</p>}
     </div>
   );
