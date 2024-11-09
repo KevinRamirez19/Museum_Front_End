@@ -1,37 +1,11 @@
-import { useState, useEffect } from "react";
-import myApi from "../assets/lib/axios/myApi";
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
-// Tipos de datos para el hook
-interface StateType {
-  stateId: number;
-  state: string;
-}
-
-interface CategoryType {
-  categoryId: number;
-  category: string;
-}
-
-interface ArtRoom {
-  artRoomId: number;
-  location_Id: number;
-  collection_Id: number;
-  name: string;
-  description: string;
-  numberExhibitions?: string;
-}
-
-interface ExhibitionType {
-  exhibitionId: number;
-  name: string;
-  description: string;
-  artRoom: ArtRoom;
-}
-
-interface ArtObjectType {
+// Define los tipos de datos que esperas de cada API
+type ArtObjectType = {
   artObjectId: number;
   exhibition_Id: number;
-  category_Id: number;
+  categoryId: number;
   state_Id: number;
   name: string;
   description: string;
@@ -39,107 +13,76 @@ interface ArtObjectType {
   creationDate: string;
   origin: string;
   cost: string;
-  exhibition: ExhibitionType;
-  category: CategoryType;
-  state: StateType;
-}
+};
 
-// Hook para manejar los objetos de arte
+type ExhibitionType = {
+  exhibitionId: number;
+  name: string;
+};
+
+type StateType = {
+  stateId: number;
+  state: string;
+};
+
+type CategoryType = {
+  categoryId: number;
+  category: string;
+};
+
 const useArtObjects = () => {
   const [artObjects, setArtObjects] = useState<ArtObjectType[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [exhibitions, setExhibitions] = useState<ExhibitionType[]>([]);
+  const [states, setStates] = useState<StateType[]>([]);
+  const [categories, setCategories] = useState<CategoryType[]>([]);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Función para obtener los objetos de arte
-  const fetchArtObjects = async () => {
-    setLoading(true);
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const [artObjectsResponse, exhibitionsResponse, statesResponse, categoriesResponse] = await Promise.all([
+          axios.get('https://nationalmuseum2.somee.com/api/ArtObject'),
+          axios.get('https://nationalmuseum2.somee.com/api/Exhibition'),
+          axios.get('https://nationalmuseum2.somee.com/api/State'),
+          axios.get('https://nationalmuseum2.somee.com/api/Category'),
+        ]);
+  
+        setArtObjects(artObjectsResponse.data);
+        setExhibitions(exhibitionsResponse.data);
+        setStates(statesResponse.data);
+        setCategories(categoriesResponse.data);
+  
+        console.log('Art Objects:', artObjectsResponse.data); // Agrega este log
+      } catch (err) {
+        setError('Error al cargar los datos');
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchData();
+  }, []);
+  
+
+  const createArtObject = async (artObject: ArtObjectType) => {
     try {
-      const response = await myApi.get<ArtObjectType[]>("ArtObject");
-      setArtObjects(response.data);
+      await axios.post('https://nationalmuseum2.somee.com/api/ArtObject', artObject);
     } catch (err) {
-      setError("Error al cargar los objetos de arte.");
-    } finally {
-      setLoading(false);
+      setError('Error al crear el objeto de arte');
     }
   };
 
-  // Función para actualizar un objeto de arte
-  const updateArtObject = async (updatedArtObject: ArtObjectType) => {
-    try {
-      const completeObject = {
-        artObjectId: updatedArtObject.artObjectId,
-        exhibition_Id: updatedArtObject.exhibition.exhibitionId,
-        category_Id: updatedArtObject.category.categoryId,
-        state_Id: updatedArtObject.state.stateId,
-        name: updatedArtObject.name,
-        description: updatedArtObject.description,
-        artist: updatedArtObject.artist,
-        creationDate: updatedArtObject.creationDate,
-        origin: updatedArtObject.origin,
-        cost: updatedArtObject.cost,
-        exhibition: {
-          exhibitionId: updatedArtObject.exhibition.exhibitionId,
-          name: updatedArtObject.exhibition.name,
-          description: updatedArtObject.exhibition.description,
-          artRoomId: updatedArtObject.exhibition.artRoom.artRoomId, // Cambiado aquí
-          artRoom: {
-            artRoomId: updatedArtObject.exhibition.artRoom.artRoomId,
-            location_Id: updatedArtObject.exhibition.artRoom.location_Id,
-            collection_Id: updatedArtObject.exhibition.artRoom.collection_Id,
-            name: updatedArtObject.exhibition.artRoom.name,
-            description: updatedArtObject.exhibition.artRoom.description,
-            numberExhibitions: updatedArtObject.exhibition.artRoom.numberExhibitions ?? "",
-          }
-        },
-        category: {
-          categoryId: updatedArtObject.category.categoryId,
-          category: updatedArtObject.category.category,
-        },
-        state: {
-          stateId: updatedArtObject.state.stateId,
-          state: updatedArtObject.state.state,
-        }
-      };
-            
-      console.log("Datos enviados a la API:", JSON.stringify(completeObject, null, 2));
-  
-      // Solicitud PUT a la API
-      const response = await myApi.put("/ArtObject", completeObject);
-      console.log("Respuesta de la API:", response.data);
-  
-      // Actualizar el estado local
-      setArtObjects((prev) =>
-        prev.map((obj) => (obj.artObjectId === updatedArtObject.artObjectId ? completeObject : obj))
-      );
-    } catch (err: any) {
-      console.error("Error al enviar la solicitud:", err?.response?.data || err.message);
-      setError("Error al actualizar el objeto de arte.");
-    }
-  };
-  
-  
-  // Función para eliminar un objeto de arte
   const deleteArtObject = async (artObjectId: number) => {
     try {
-      await myApi.delete(`/ArtObject/${artObjectId}`);
-      setArtObjects((prev) => prev.filter((artObject) => artObject.artObjectId !== artObjectId));
+      await axios.delete(`https://nationalmuseum2.somee.com/api/ArtObject/${artObjectId}`);
     } catch (err) {
-      setError("Error al eliminar el objeto de arte.");
+      setError('Error al eliminar el objeto de arte');
     }
   };
 
-  // Hook de efecto para obtener los datos al cargar el componente
-  useEffect(() => {
-    fetchArtObjects();
-  }, []);
-
-  return {
-    artObjects,
-    loading,
-    error,
-    updateArtObject,
-    deleteArtObject,
-  };
+  return { artObjects, exhibitions, states, categories, loading, error, createArtObject, deleteArtObject };
 };
 
 export default useArtObjects;
