@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Table, Button, message, Modal, Input, Form, Select, DatePicker } from "antd";
 import { EditOutlined, SaveOutlined, CloseOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
-import useEmployees from "../../../hooks/useEmployees"; // Ajusta la ruta según tu estructura de carpetas
+import useEmployees from "../../../hooks/useEmployees"; 
+import { useAuth } from "../../../Context/AuthContext";
 
 const { Column } = Table;
 const { Search } = Input;
@@ -9,6 +10,7 @@ const { Option } = Select;
 
 const EmployeesScreen = () => {
   const { employees, users, typeEmployees, workSchedules, loading, error, updateEmployee, deleteEmployee, createEmployee } = useEmployees();
+  const { state } = useAuth();
   const [editingKey, setEditingKey] = useState<number | null>(null);
   const [form] = Form.useForm();
   const [searchText, setSearchText] = useState("");
@@ -107,9 +109,11 @@ const EmployeesScreen = () => {
   return (
     <div>
       <h3>Gestión de Empleados</h3>
-      <Button type="primary" onClick={openCreateModal} icon={<PlusOutlined />} style={{ marginBottom: 16 }}>
-        Crear Empleado
-      </Button>
+      {state.user?.userType === 1 && (
+        <Button type="primary" onClick={openCreateModal} icon={<PlusOutlined />} style={{ marginBottom: 16 }}>
+          Crear Empleado
+        </Button>
+      )}
       <Search
         placeholder="Buscar por nombre de usuario o horario de trabajo"
         onChange={(e) => setSearchText(e.target.value)}
@@ -160,6 +164,10 @@ const EmployeesScreen = () => {
             key="actions"
             render={(_, record: any) => {
               const editable = editingKey === record.employeeId;
+
+              // Mostrar acciones solo si el usuario es administrador
+              if (state.user?.userType !== 1) return null;
+
               return editable ? (
                 <>
                   <Button onClick={() => save(record)} icon={<SaveOutlined />} />

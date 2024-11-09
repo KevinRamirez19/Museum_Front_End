@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Table, Input, Button, Popconfirm, message, Modal, Form } from "antd";
 import useCollections from "../../../hooks/useCollection";
+import { useAuth } from "../../../Context/AuthContext"; // Importa el contexto de autenticación
 import "./CollectionInventoryScreen.css";
 import { Collection } from "../../../hooks/useCollection";
 
 const CollectionTable = () => {
   const { collections, deleteCollection, updateCollection, addCollection } = useCollections();
+  const { state } = useAuth(); // Accede al estado de autenticación
   const [searchText, setSearchText] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -60,19 +62,24 @@ const CollectionTable = () => {
       key: "actions",
       render: (_: any, record: any) => (
         <>
-          <Button type="link" onClick={() => showEditModal(record)}>
-            Editar
-          </Button>
-          <Popconfirm
-            title="¿Estás seguro de eliminar esta colección?"
-            onConfirm={() => handleDelete(record.collectionId)}
-            okText="Sí"
-            cancelText="No"
-          >
-            <Button type="link" danger>
-              Eliminar
-            </Button>
-          </Popconfirm>
+          {/* Solo mostrar los botones si el usuario es Admin */}
+          {state.user?.userType === 1 && (
+            <>
+              <Button type="link" onClick={() => showEditModal(record)}>
+                Editar
+              </Button>
+              <Popconfirm
+                title="¿Estás seguro de eliminar esta colección?"
+                onConfirm={() => handleDelete(record.collectionId)}
+                okText="Sí"
+                cancelText="No"
+              >
+                <Button type="link" danger>
+                  Eliminar
+                </Button>
+              </Popconfirm>
+            </>
+          )}
         </>
       ),
     },
@@ -95,9 +102,12 @@ const CollectionTable = () => {
         onChange={(e) => setSearchText(e.target.value)}
         style={{ width: 300, marginBottom: 20 }}
       />
-      <Button type="primary" onClick={showModal} style={{ marginBottom: 20 }}>
-        Agregar Colección
-      </Button>
+      {/* Solo permitir agregar colección si el usuario es Admin */}
+      {state.user?.userType === 1 && (
+        <Button type="primary" onClick={showModal} style={{ marginBottom: 20 }}>
+          Agregar Colección
+        </Button>
+      )}
       <Table
         columns={collectionColumns}
         dataSource={filteredCollections}
@@ -105,39 +115,38 @@ const CollectionTable = () => {
         pagination={{ pageSize: 5 }}
       />
 
-  <Modal
-    title={isEditing ? "Editar Colección" : "Agregar Nueva Colección"}
-    visible={isModalVisible}
-    onOk={isEditing ? handleUpdateCollection : handleAddCollection}
-    onCancel={() => setIsModalVisible(false)}
-    okText={isEditing ? "Actualizar" : "Agregar"}
-    cancelText="Cancelar"
-  >
-    <Form layout="vertical">
-      <Form.Item label="Nombre">
-        <Input
-          value={isEditing ? editingCollection?.name : newCollection.name}
-          onChange={(e) =>
-            isEditing
-              ? setEditingCollection({ ...editingCollection, name: e.target.value } as Collection)
-              : setNewCollection({ ...newCollection, name: e.target.value })
-          }
-        />
-      </Form.Item>
-      <Form.Item label="Descripción">
-        <Input
-          value={isEditing ? editingCollection?.descriptiom : newCollection.descriptiom}
-          onChange={(e) =>
-            isEditing
-              ? setEditingCollection({ ...editingCollection, descriptiom: e.target.value } as Collection)
-              : setNewCollection({ ...newCollection, descriptiom: e.target.value })
-          }
-        />
-      </Form.Item>
-    </Form>
-  </Modal>
-
-      </div>
+      <Modal
+        title={isEditing ? "Editar Colección" : "Agregar Nueva Colección"}
+        visible={isModalVisible}
+        onOk={isEditing ? handleUpdateCollection : handleAddCollection}
+        onCancel={() => setIsModalVisible(false)}
+        okText={isEditing ? "Actualizar" : "Agregar"}
+        cancelText="Cancelar"
+      >
+        <Form layout="vertical">
+          <Form.Item label="Nombre">
+            <Input
+              value={isEditing ? editingCollection?.name : newCollection.name}
+              onChange={(e) =>
+                isEditing
+                  ? setEditingCollection({ ...editingCollection, name: e.target.value } as Collection)
+                  : setNewCollection({ ...newCollection, name: e.target.value })
+              }
+            />
+          </Form.Item>
+          <Form.Item label="Descripción">
+            <Input
+              value={isEditing ? editingCollection?.descriptiom : newCollection.descriptiom}
+              onChange={(e) =>
+                isEditing
+                  ? setEditingCollection({ ...editingCollection, descriptiom: e.target.value } as Collection)
+                  : setNewCollection({ ...newCollection, descriptiom: e.target.value })
+              }
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
+    </div>
   );
 };
 

@@ -2,12 +2,14 @@ import { useState } from "react";
 import { Table, Button, message, Modal, Input, Form, Select } from "antd";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import useArtObjects from "../../../hooks/useArtObject";
+import { useAuth } from "../../../Context/AuthContext"; // Importa el hook de autenticación
 
 const { Column } = Table;
 const { Search } = Input;
 
 const ArtObjectsScreen = () => {
   const { artObjects, loading, error, deleteArtObject, createArtObject, exhibitions, categories, states } = useArtObjects();
+  const { state } = useAuth(); // Obtén el estado de autenticación
   const [form] = Form.useForm();
   const [searchText, setSearchText] = useState(""); // Filtro por nombre
   const [originText, setOriginText] = useState(""); // Filtro por origen
@@ -75,9 +77,13 @@ const ArtObjectsScreen = () => {
             style={{ width: "48%" }}
           />
         </div>
-        <Button type="primary" icon={<PlusOutlined />} onClick={showModal}>
-          Agregar Objeto de Arte
-        </Button>
+
+        {/* Mostrar el botón de agregar solo si el usuario es administrador */}
+        {state.user?.userType === 1 && (
+          <Button type="primary" icon={<PlusOutlined />} onClick={showModal}>
+            Agregar Objeto de Arte
+          </Button>
+        )}
       </div>
 
       <Table dataSource={filteredArtObjects} rowKey="artObjectId" pagination={{ pageSize: 5 }}>
@@ -90,15 +96,18 @@ const ArtObjectsScreen = () => {
           title="Estado"
           key="state_Id"
           render={(_, record) => {
-            const state = states.find((state) => state.stateId === record.state_Id);
-            return state ? state.state : "Sin Estado";
+            const stateObj = states.find((state) => state.stateId === record.state_Id);
+            return stateObj ? stateObj.state : "Sin Estado";
           }}
         />
         <Column
           title="Acciones"
           key="actions"
           render={(_, record) => (
-            <Button onClick={() => confirmDelete(record)} icon={<DeleteOutlined />} danger />
+            // Mostrar el botón de eliminar solo si el usuario es administrador
+            state.user?.userType === 1 && (
+              <Button onClick={() => confirmDelete(record)} icon={<DeleteOutlined />} danger />
+            )
           )}
         />
       </Table>

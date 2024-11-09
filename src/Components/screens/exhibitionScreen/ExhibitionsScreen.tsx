@@ -15,11 +15,13 @@ const ExhibitionsScreen = () => {
   const [form] = Form.useForm();
   const [searchTextExhibition, setSearchTextExhibition] = useState("");
   const [searchTextArtRoom, setSearchTextArtRoom] = useState("");
-  const {state} = useAuth()
-  const navigate = useNavigate()
+  const { state } = useAuth(); // Se obtiene el estado del contexto de autenticación
+  const navigate = useNavigate();
+
   if (!state.user) {
-    navigate("/login")
+    navigate("/login");
   }
+
   const startEditing = (record: any) => {
     setEditingKey("exhibitionId" in record ? record.exhibitionId : record.artRoomId);
     form.setFieldsValue({ ...record });
@@ -117,24 +119,28 @@ const ExhibitionsScreen = () => {
             }}
           />
           <Column title="Sala a la que pertenece" dataIndex={["artRoom", "artRoomId"]} key="artRoomId" />
-          <Column
-            title="Acciones"
-            key="actions"
-            render={(_, record: any) => {
-              const editable = editingKey === record.exhibitionId;
-              return editable ? (
-                <>
-                  <Button onClick={() => save(record)} icon={<SaveOutlined />} />
-                  <Button onClick={cancelEditing} icon={<CloseOutlined />} />
-                </>
-              ) : (
-                <>
-                  <Button onClick={() => startEditing(record)} icon={<EditOutlined />} />
-                  <Button onClick={() => confirmDelete(record)} icon={<DeleteOutlined />} danger />
-                </>
-              );
-            }}
-          />
+          
+          {/* Columnas de acciones solo para administradores */}
+          {state.user?.userType === 1 && (
+            <Column
+              title="Acciones"
+              key="actions"
+              render={(_, record: any) => {
+                const editable = editingKey === record.exhibitionId;
+                return editable ? (
+                  <>
+                    <Button onClick={() => save(record)} icon={<SaveOutlined />} />
+                    <Button onClick={cancelEditing} icon={<CloseOutlined />} />
+                  </>
+                ) : (
+                  <>
+                    <Button onClick={() => startEditing(record)} icon={<EditOutlined />} />
+                    <Button onClick={() => confirmDelete(record)} icon={<DeleteOutlined />} danger />
+                  </>
+                );
+              }}
+            />
+          )}
         </Table>
       </Form>
 
@@ -175,24 +181,28 @@ const ExhibitionsScreen = () => {
               );
             }}
           />
-          <Column
-            title="Acciones"
-            key="actions"
-            render={(_, record: any) => {
-              const editable = editingKey === record.artRoomId;
-              return editable ? (
-                <>
-                  <Button onClick={() => save(record)} icon={<SaveOutlined />} />
-                  <Button onClick={cancelEditing} icon={<CloseOutlined />} />
-                </>
-              ) : (
-                <>
-                  <Button onClick={() => startEditing(record)} icon={<EditOutlined />} />
-                  <Button onClick={() => confirmDelete(record)} icon={<DeleteOutlined />} danger />
-                </>
-              );
-            }}
-          />
+          
+          {/* Columnas de acciones solo para administradores */}
+          {state.user?.userType === 1 && (
+            <Column
+              title="Acciones"
+              key="actions"
+              render={(_, record: any) => {
+                const editable = editingKey === record.artRoomId;
+                return editable ? (
+                  <>
+                    <Button onClick={() => save(record)} icon={<SaveOutlined />} />
+                    <Button onClick={cancelEditing} icon={<CloseOutlined />} />
+                  </>
+                ) : (
+                  <>
+                    <Button onClick={() => startEditing(record)} icon={<EditOutlined />} />
+                    <Button onClick={() => confirmDelete(record)} icon={<DeleteOutlined />} danger />
+                  </>
+                );
+              }}
+            />
+          )}
         </Table>
       </Form>
     </div>
@@ -200,3 +210,4 @@ const ExhibitionsScreen = () => {
 };
 
 export default ExhibitionsScreen;
+

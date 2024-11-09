@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { UserOutlined, MailOutlined, LockOutlined } from '@ant-design/icons';
-import { Button, Input, message, Modal } from 'antd';
+import React, { useState } from "react";
+import { UserOutlined, MailOutlined, LockOutlined } from "@ant-design/icons";
+import { Button, Input, message, Modal } from "antd";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { loginSchema } from "../../../assets/lib/zod/validations";
+import { useAuth } from "../../../Context/AuthContext"; // Importa el contexto
 import './LoginScreen.css';
-import { Controller, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { loginSchema } from '../../../assets/lib/zod/validations';
-import { useAuth } from '../../../Context/AuthContext'; // Importa el contexto
-import myApi from '../../../assets/lib/axios/myApi';
-import { useNavigate } from 'react-router-dom';
-import RegisterForm from './RegisterForm';  // Importa el formulario de registro
+import myApi from "../../../assets/lib/axios/myApi";
+import { useNavigate } from "react-router-dom";
+import RegisterForm from "./RegisterForm";  // Importa el formulario de registro
 
 interface IloginForm {
   email: string;
@@ -16,7 +16,7 @@ interface IloginForm {
 }
 
 const LoginScreen: React.FC = () => {
-  const { login, } = useAuth(); // Usa el contexto de autenticación
+  const { login } = useAuth(); // Usa el contexto de autenticación
   const { control, handleSubmit, formState: { errors } } = useForm<IloginForm>({
     defaultValues: { email: "", password: "" },
     resolver: zodResolver(loginSchema),
@@ -24,31 +24,39 @@ const LoginScreen: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);  // Estado para controlar el modal
   const navigate = useNavigate();
 
+  // Realiza la autenticación del usuario
   const validatedLogin = async (formLogin: IloginForm) => {
     try {
-      const valid = await myApi.post("/login", formLogin);
-      if (valid.data) {
-        return true;
-      }
+      const response = await myApi.post("/login", formLogin); // Llamada al backend
+      console.log("Respuesta del backend:", response.data); // Imprime la respuesta completa
+      return response.data; // Retorna todos los detalles del usuario
     } catch (error) {
       console.log(error);
-      return false;
+      return null; // Si la autenticación falla
     }
-    return false;
   };
+  
 
+  // Maneja el inicio de sesión
   const handleLogin = async (formLogin: IloginForm) => {
-    const valid = await validatedLogin(formLogin);
-    if (!valid) {
+    const userData = await validatedLogin(formLogin);
+
+    if (!userData) {
       message.error("Credenciales Invalidas");
       return;
     }
 
     const user = {
-      email: formLogin.email,
+      email: userData.email,
+      userType: userData.userTypeId,  // Cambia `user_Type_Id` a `userTypeId`
     };
+    
 
+    console.log("userType asignado desde el backend:", user.userType);
+
+    // Guardar el usuario y tipo de usuario en el contexto
     login(user);
+    // Navegar a la página principal
     navigate("/");
   };
 

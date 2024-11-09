@@ -47,8 +47,8 @@ function Navbar() {
     { key: "visitorManagement", label: <a href="/visitorManagement"><UsergroupAddOutlined />Gestión de Visitantes</a> },
     { key: "reports", label: <a href="/reports"><FileDoneOutlined />Reportes</a> },
     { key: "artRooms", label: <a href="/artRooms"><AppstoreOutlined />Cuarto de Arte</a> }, 
-    { key: "logOut", label: <button onClick={logOut}><LoginOutlined />Cerrar Sesion</button> },
     { key: "employees", label: <a href="/employees"><TeamOutlined />Empleados</a> },
+    { key: "logOut", label: <button onClick={logOut}><LoginOutlined />Cerrar Sesion</button> },
   ];
   const handleOnClick: MenuProps["onClick"] = (e) => {
     console.log(e);

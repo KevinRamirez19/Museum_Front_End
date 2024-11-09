@@ -4,14 +4,16 @@ import { PieChart, Legend, Pie, Cell, LineChart, Line, XAxis, YAxis, Tooltip, Ca
 import useGameStates from "../../../hooks/useGameStates";
 import useGameProgress from "../../../hooks/useGameProgress";
 import useScenaries from "../../../hooks/useScenary";
+import { useAuth } from "../../../Context/AuthContext";
 import "./ReportesScreen.css";
 
 const COLORS = ["#0088FE", "#FF8042"];
 
 const GameStateReportScreen = () => {
-  const chartData = useGameStates(); // Datos del estado de las partidas
-  const { gameProgressData, loading, error } = useGameProgress(); // Datos del progreso del juego
-  const { scenaries, deleteScenary } = useScenaries(); // Datos de los escenarios
+  const chartData = useGameStates();
+  const { gameProgressData, loading, error } = useGameProgress();
+  const { scenaries, deleteScenary } = useScenaries();
+  const { state } = useAuth();
   const [searchText, setSearchText] = useState("");
 
   if (loading) {
@@ -22,12 +24,10 @@ const GameStateReportScreen = () => {
     return <div>Error al cargar los datos del progreso: {error}</div>;
   }
 
-  // Filtrar datos de escenarios por nombre
   const filteredScenaries = scenaries.filter((scenary) =>
     scenary.scenaryName.toLowerCase().includes(searchText.toLowerCase())
   );
 
-  // Configuración de columnas de la tabla
   const scenaryColumns = [
     { title: "Nombre", dataIndex: "scenaryName", key: "scenaryName" },
     { title: "Descripción", dataIndex: "description", key: "description" },
@@ -35,40 +35,36 @@ const GameStateReportScreen = () => {
     {
       title: "Acciones",
       key: "actions",
-      render: (_: any, record: any) => (
-        <Popconfirm
-          title="¿Estás seguro de eliminar este escenario?"
-          onConfirm={() => handleDelete(record.scenaryId)}
-          okText="Sí"
-          cancelText="No"
-        >
-          <Button type="link" danger>
-            Eliminar
-          </Button>
-        </Popconfirm>
-      ),
+      render: (_: any, record: any) =>
+        state.user?.userType === 1 && (
+          <Popconfirm
+            title="¿Estás seguro de eliminar este escenario?"
+            onConfirm={() => handleDelete(record.scenaryId)}
+            okText="Sí"
+            cancelText="No"
+          >
+            <Button type="link" danger>
+              Eliminar
+            </Button>
+          </Popconfirm>
+        ),
     },
   ];
 
-  // Función para eliminar el escenario y mostrar mensaje de confirmación
-// Modificación en el componente de la pantalla para confirmar la eliminación
-const handleDelete = async (scenaryId: number) => {
-  const success = await deleteScenary(scenaryId);
-  if (success) {
-    message.success("Escenario eliminado correctamente.");
-  } else {
-    message.error("No se pudo eliminar el escenario.");
-  }
-};
+  const handleDelete = async (scenaryId: number) => {
+    const success = await deleteScenary(scenaryId);
+    if (success) {
+      message.success("Escenario eliminado correctamente.");
+    } else {
+      message.error("No se pudo eliminar el escenario.");
+    }
+  };
 
-
-  // Contar ocurrencias de cada etapa
   const progressCount = gameProgressData.reduce((acc: { [key: string]: number }, item) => {
     acc[item.gameProgress] = (acc[item.gameProgress] || 0) + 1;
     return acc;
   }, {} as { [key: string]: number });
 
-  // Convertir a formato para la gráfica de líneas
   const lineChartData = Object.keys(progressCount).map((key) => ({
     name: key,
     value: progressCount[key],

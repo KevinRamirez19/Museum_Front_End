@@ -2,10 +2,11 @@ import { useState } from "react";
 import { Table, Input, Modal, message, Button, DatePicker, Select } from "antd";
 import useTickets from "../../../hooks/useTickets";
 import dayjs from "dayjs";
+import { useAuth } from "../../../Context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const { Option } = Select;
 
-// Definir Ticket
 interface Ticket {
   ticketId: number;
   visitDate: string;
@@ -21,18 +22,16 @@ interface Ticket {
 }
 
 const VisitorManagementScreen = () => {
-  const {
-    tickets,
-    ticketTypes,
-    paymentMethods,
-    loading,
-    error,
-    updateTicket,
-    deleteTicket,
-  } = useTickets();
+  const { tickets, ticketTypes, paymentMethods, loading, error, updateTicket, deleteTicket } = useTickets();
   const [editingKey, setEditingKey] = useState<number | null>(null);
   const [editedTicket, setEditedTicket] = useState<Ticket | null>(null);
-  const [searchTerm, setSearchTerm] = useState<string>(""); // Estado para filtro de búsqueda
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const { state } = useAuth();
+  const navigate = useNavigate();
+
+  if (!state.user) {
+    navigate("/login");
+  }
 
   const edit = (record: Ticket) => {
     setEditingKey(record.ticketId);
@@ -97,7 +96,6 @@ const VisitorManagementScreen = () => {
     });
   };
 
-  // Filtrar tickets por nombre
   const filteredTickets = tickets.filter((ticket) => {
     const fullName = `${ticket.user.names} ${ticket.user.lastNames}`.toLowerCase();
     return fullName.includes(searchTerm.toLowerCase());
@@ -111,7 +109,6 @@ const VisitorManagementScreen = () => {
       key: "userName",
       render: (_: any, record: Ticket) => `${record.user.names} ${record.user.lastNames}`,
     },
-    
     {
       title: "Numero de documento",
       dataIndex: "employeeId",
@@ -180,21 +177,29 @@ const VisitorManagementScreen = () => {
       render: (_: any, record: Ticket) =>
         editingKey === record.ticketId ? (
           <>
-            <Button onClick={save} type="link">
-              Guardar
-            </Button>
-            <Button onClick={cancel} type="link">
-              Cancelar
-            </Button>
+            {state.user?.userType === 1 && (
+              <>
+                <Button onClick={save} type="link">
+                  Guardar
+                </Button>
+                <Button onClick={cancel} type="link">
+                  Cancelar
+                </Button>
+              </>
+            )}
           </>
         ) : (
           <>
-            <Button onClick={() => edit(record)} type="link">
-              Editar
-            </Button>
-            <Button onClick={() => handleDelete(record.ticketId)} type="link" danger>
-              Eliminar
-            </Button>
+            {state.user?.userType === 1 && (
+              <>
+                <Button onClick={() => edit(record)} type="link">
+                  Editar
+                </Button>
+                <Button onClick={() => handleDelete(record.ticketId)} type="link" danger>
+                  Eliminar
+                </Button>
+              </>
+            )}
           </>
         ),
     },
@@ -219,7 +224,7 @@ const VisitorManagementScreen = () => {
       />
       <Table
         columns={ticketColumns}
-        dataSource={filteredTickets}  // Usamos los tickets filtrados
+        dataSource={filteredTickets}
         rowKey="ticketId"
         pagination={{ pageSize: 5 }}
       />
