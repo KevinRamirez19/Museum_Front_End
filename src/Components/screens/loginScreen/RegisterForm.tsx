@@ -1,6 +1,5 @@
-// src/components/RegisterForm.tsx
-import React from 'react';
-import { Form, Input, Button, Select, DatePicker, message } from 'antd';
+import React, { useState } from 'react';
+import { Form, Input, Button, Select, DatePicker, message, Checkbox, Modal } from 'antd';
 import { z } from 'zod';
 import { registerSchema } from '../../../assets/lib/zod/Register';
 
@@ -8,20 +7,37 @@ const { Option } = Select;
 
 const RegisterForm: React.FC = () => {
   const [form] = Form.useForm();
+  const [termsModalVisible, setTermsModalVisible] = useState(false); // Estado para controlar el modal de términos y condiciones
+  const [acceptedTerms, setAcceptedTerms] = useState(false); // Estado para controlar si el usuario aceptó los términos
 
-  const onFinish = (values: any) => {
+  const onFinish = async (values: any) => {
     try {
       // Validar los datos con Zod
-      registerSchema.parse(values);
+      await registerSchema.parseAsync(values); // Usamos parseAsync para que la validación sea asincrónica si es necesario
       console.log('Formulario enviado:', values);
       message.success("Registro exitoso");
     } catch (error) {
       if (error instanceof z.ZodError) {
         error.errors.forEach(err => {
-          message.error(err.message);
+          message.error(err.message); // Muestra cada error de Zod
         });
       }
     }
+  };
+
+  // Función para mostrar el modal de términos y condiciones
+  const showTermsModal = () => {
+    setTermsModalVisible(true); // Muestra el modal
+  };
+
+  // Función para cerrar el modal de términos y condiciones
+  const handleTermsModalCancel = () => {
+    setTermsModalVisible(false); // Cierra el modal
+  };
+
+  // Función para manejar el cambio en el checkbox de aceptación de términos
+  const handleAcceptTermsChange = (e: any) => {
+    setAcceptedTerms(e.target.checked); // Actualiza el estado del checkbox
   };
 
   return (
@@ -82,11 +98,81 @@ const RegisterForm: React.FC = () => {
         <Input />
       </Form.Item>
 
+      {/* Campo de Términos y Condiciones */}
+      <Form.Item name="terminos" valuePropName="checked" rules={[{ required: true, message: "Debe aceptar los términos y condiciones" }]}>
+        <Checkbox onChange={handleAcceptTermsChange}>
+          Acepto los <a onClick={showTermsModal} style={{ cursor: 'pointer' }}>términos y condiciones</a>.
+        </Checkbox>
+      </Form.Item>
+
       <Form.Item>
-        <Button type="primary" htmlType="submit">
+        <Button 
+          type="primary" 
+          htmlType="submit" 
+          disabled={!acceptedTerms}  // Deshabilita el botón si los términos no están aceptados
+        >
           Registrarse
         </Button>
       </Form.Item>
+
+      {/* Modal de Términos y Condiciones */}
+      <Modal
+        title="Términos y Condiciones"
+        visible={termsModalVisible}
+        onCancel={handleTermsModalCancel}
+        footer={null}
+        width={700}
+      >
+        <div style={{ maxHeight: '60vh', overflowY: 'auto' }}>
+          <h3>Política de Privacidad</h3>
+          <p><strong>1. Introducción</strong></p>
+          <p>El Museo Nacional de Colombia se compromete a proteger la privacidad y la seguridad de los datos personales de nuestros usuarios, visitantes y participantes. Estos términos y condiciones explican cómo recopilamos, utilizamos y protegemos sus datos personales de conformidad con la Ley 1581 de 2012 y demás normativas vigentes sobre protección de datos personales en Colombia.</p>
+
+          <p><strong>2. Responsable del Tratamiento de Datos</strong></p>
+          <p>El responsable del tratamiento de los datos personales es el Museo Nacional de Colombia, ubicado en [Cra. 7 #N. 28-66, Bogotá], y con contacto a través del correo electrónico [info@museonacional.gov.co].</p>
+
+          <p><strong>3. Finalidad del Tratamiento de Datos</strong></p>
+          <p>Los datos personales que recopilamos serán utilizados con las siguientes finalidades:</p>
+          <ul>
+            <li>Registro de visitantes: Para llevar un control de los visitantes y participantes en actividades del Museo (exposiciones).</li>
+            <li>Comunicación: Para enviar información sobre actividades, eventos y exposiciones futuras del Museo, así como boletines informativos.</li>
+            <li>Evaluación de la experiencia: Para recibir comentarios y sugerencias que nos permitan mejorar nuestros servicios y la experiencia de los visitantes.</li>
+            <li>Cumplimiento legal: Para cumplir con obligaciones legales y normativas relacionadas con la operación del Museo.</li>
+          </ul>
+
+          <p><strong>4. Tipos de Datos Recopilados</strong></p>
+          <ul>
+            <li>Datos de contacto: Nombre, correo electrónico, número de teléfono, dirección, etc.</li>
+            <li>Datos de identificación: Tipo de documento de identidad, número de documento, etc.</li>
+            <li>Datos de actividad en el Museo: Información sobre las visitas, participación en eventos, y preferencias relacionadas con las actividades del Museo.</li>
+            <li>Datos sensibles (si aplica): En caso de que el Museo reciba datos sensibles, como información sobre discapacidad, se solicitará el consentimiento expreso para su tratamiento.</li>
+          </ul>
+
+          <p><strong>5. Derechos de los Titulares de los Datos</strong></p>
+          <ul>
+            <li>Acceder: A sus datos personales de forma gratuita y obtener información sobre cómo se están utilizando.</li>
+            <li>Rectificar y actualizar: Sus datos personales cuando estos sean inexactos o estén desactualizados.</li>
+            <li>Suprimir: Sus datos personales en caso de que ya no sean necesarios para las finalidades del tratamiento.</li>
+            <li>Revocar la autorización: Para el tratamiento de sus datos personales en cualquier momento, sin efectos retroactivos.</li>
+            <li>Oponerse: Al tratamiento de sus datos en los casos previstos por la ley.</li>
+          </ul>
+
+          <p><strong>6. Autorización del Titular</strong></p>
+          <p>Al ingresar al Museo, inscribirse en nuestras actividades o interactuar con nuestros servicios, los usuarios dan su consentimiento expreso para el tratamiento de sus datos personales, conforme a los términos expuestos en este documento.</p>
+
+          <p><strong>7. Modificaciones a la Política de Privacidad</strong></p>
+          <p>El Museo se reserva el derecho de modificar esta política de privacidad en cualquier momento. Las modificaciones serán publicadas en el sitio web oficial y estarán disponibles para consulta por los usuarios.</p>
+
+          <p><strong>8. Contacto</strong></p>
+          <p>Si tiene alguna duda, comentario o solicitud sobre el tratamiento de sus datos personales, puede contactar al Museo Nacional de Colombia a través del correo electrónico [info@museonacional.gov.co].</p>
+
+          <div style={{ marginTop: '20px' }}>
+            <Checkbox>
+              Acepto los términos y condiciones
+            </Checkbox>
+          </div>
+        </div>
+      </Modal>
     </Form>
   );
 };

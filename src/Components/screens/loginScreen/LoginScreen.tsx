@@ -1,4 +1,3 @@
-// src/components/LoginScreen.tsx
 import React, { useState } from 'react';
 import { UserOutlined, MailOutlined, LockOutlined } from '@ant-design/icons';
 import { Button, Input, message, Modal } from 'antd';
@@ -6,10 +5,10 @@ import './LoginScreen.css';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema } from '../../../assets/lib/zod/validations';
-import { useAuth } from '../../../Context/AuthContext';
+import { useAuth } from '../../../Context/AuthContext'; // Importa el contexto
 import myApi from '../../../assets/lib/axios/myApi';
 import { useNavigate } from 'react-router-dom';
-import RegisterForm from './RegisterForm'; // Importa tu formulario de registro
+import RegisterForm from './RegisterForm';  // Importa el formulario de registro
 
 interface IloginForm {
   email: string;
@@ -17,14 +16,13 @@ interface IloginForm {
 }
 
 const LoginScreen: React.FC = () => {
-  const { login, state } = useAuth();
+  const { login, } = useAuth(); // Usa el contexto de autenticación
   const { control, handleSubmit, formState: { errors } } = useForm<IloginForm>({
     defaultValues: { email: "", password: "" },
     resolver: zodResolver(loginSchema),
   });
+  const [isModalVisible, setIsModalVisible] = useState(false);  // Estado para controlar el modal
   const navigate = useNavigate();
-  
-  const [isModalVisible, setIsModalVisible] = useState(false); // Estado para controlar el modal
 
   const validatedLogin = async (formLogin: IloginForm) => {
     try {
@@ -41,8 +39,6 @@ const LoginScreen: React.FC = () => {
 
   const handleLogin = async (formLogin: IloginForm) => {
     const valid = await validatedLogin(formLogin);
-    console.log(formLogin);
-
     if (!valid) {
       message.error("Credenciales Invalidas");
       return;
@@ -54,15 +50,15 @@ const LoginScreen: React.FC = () => {
 
     login(user);
     navigate("/");
-    console.log(state);
   };
 
-  const showRegisterModal = () => {
-    setIsModalVisible(true); // Muestra el modal
+  // Mostrar el modal de registro
+  const handleRegister = () => {
+    setIsModalVisible(true);  // Muestra el modal
   };
 
-  const handleModalCancel = () => {
-    setIsModalVisible(false); // Cierra el modal
+  const handleCancel = () => {
+    setIsModalVisible(false);  // Cierra el modal
   };
 
   return (
@@ -104,19 +100,19 @@ const LoginScreen: React.FC = () => {
           </Button>
         </form>
         <p className="register-text">¿No tienes cuenta?</p>
-        <Button type="link" onClick={showRegisterModal} className="register-button">
+        <Button type="link" onClick={handleRegister} className="register-button">
           Registrarse
         </Button>
       </div>
 
-      {/* Modal para el formulario de registro */}
+      {/* Modal de Registro */}
       <Modal
-        title="Registro de Usuario"
+        title="Registrarse"
         visible={isModalVisible}
-        onCancel={handleModalCancel}
-        footer={null} // No mostrar los botones predeterminados de 'Ok' y 'Cancel'
+        onCancel={handleCancel}
+        footer={null}
       >
-        <RegisterForm /> {/* Muestra el formulario de registro en el modal */}
+        <RegisterForm />  {/* Aquí se renderiza el formulario de registro */}
       </Modal>
     </div>
   );

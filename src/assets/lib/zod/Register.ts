@@ -1,4 +1,4 @@
-import { object, string,} from "zod";
+import { object, string, boolean } from "zod";
 
 export const registerSchema = object({
   nombres: string().min(1, "Por favor ingrese sus nombres"),
@@ -16,4 +16,7 @@ export const registerSchema = object({
     .regex(/[0-9]/, "Debe tener al menos un número")
     .regex(/[^A-Za-z0-9]/, "Debe tener un carácter especial"),
   contacto: string().min(1, "Por favor ingrese su número de contacto"),
+  terminos: boolean().refine(val => val === true, {
+    message: "Debes aceptar los términos y condiciones",
+  }),
 });
