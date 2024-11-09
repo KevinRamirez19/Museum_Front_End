@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import dayjs from "dayjs";
+import myApi from "../assets/lib/axios/myApi";
 
 interface ArtRoomType {
   artRoomId: number;
@@ -30,7 +30,7 @@ const useExhibitions = () => {
 
   const fetchExhibitions = async () => {
     try {
-      const response = await axios.get<ExhibitionType[]>("https://nationalmuseum2.somee.com/api/Exhibition");
+      const response = await myApi.get<ExhibitionType[]>("/Exhibition");
       setExhibitions(response.data);
     } catch (err) {
       setError("Error al cargar las exposiciones.");
@@ -41,7 +41,7 @@ const useExhibitions = () => {
 
   const fetchArtRooms = async () => {
     try {
-      const response = await axios.get<ArtRoomType[]>("https://nationalmuseum2.somee.com/api/ArtRoom");
+      const response = await myApi.get<ArtRoomType[]>("/ArtRoom");
       setArtRooms(response.data);
     } catch (err) {
       setError("Error al cargar las salas de arte.");
@@ -52,7 +52,7 @@ const useExhibitions = () => {
 
   const updateExhibition = async (updatedExhibition: ExhibitionType) => {
     try {
-      await axios.put("https://nationalmuseum2.somee.com/api/Exhibition", updatedExhibition);
+      await myApi.put("/Exhibition", updatedExhibition);
       setExhibitions((prev) => prev.map((e) => (e.exhibitionId === updatedExhibition.exhibitionId ? updatedExhibition : e)));
     } catch (err) {
       setError("Error al actualizar la exposición.");
@@ -61,7 +61,7 @@ const useExhibitions = () => {
 
   const updateArtRoom = async (updatedArtRoom: ArtRoomType) => {
     try {
-      await axios.put("https://nationalmuseum2.somee.com/api/ArtRoom", updatedArtRoom);
+      await myApi.put("/ArtRoom", updatedArtRoom);
       setArtRooms((prev) => prev.map((a) => (a.artRoomId === updatedArtRoom.artRoomId ? updatedArtRoom : a)));
     } catch (err) {
       setError("Error al actualizar la sala de arte.");
@@ -70,7 +70,7 @@ const useExhibitions = () => {
 
   const deleteExhibition = async (exhibitionId: number) => {
     try {
-      await axios.delete(`https://nationalmuseum2.somee.com/api/Exhibition/${exhibitionId}`);
+      await myApi.delete(`/Exhibition/${exhibitionId}`);
       setExhibitions((prev) => prev.filter((e) => e.exhibitionId !== exhibitionId));
     } catch (err) {
       setError("Error al eliminar la exposición.");
@@ -79,7 +79,7 @@ const useExhibitions = () => {
 
   const deleteArtRoom = async (artRoomId: number) => {
     try {
-      await axios.delete(`https://nationalmuseum2.somee.com/api/ArtRoom/${artRoomId}`);
+      await axios.delete(`/ArtRoom/${artRoomId}`);
       setArtRooms((prev) => prev.filter((a) => a.artRoomId !== artRoomId));
     } catch (err) {
       setError("Error al eliminar la sala de arte.");

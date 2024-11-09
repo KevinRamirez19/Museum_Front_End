@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
+import myApi from "../assets/lib/axios/myApi";
 
 // Definir la interfaz de un Ticket
 interface Ticket {
@@ -38,7 +39,7 @@ const useTickets = () => {
   // Función para obtener los tickets
   const fetchTickets = async () => {
     try {
-      const response = await axios.get<Ticket[]>("https://nationalmuseum2.somee.com/api/Tickets");
+      const response = await myApi.get<Ticket[]>("https://nationalmuseum2.somee.com/api/Tickets");
       setTickets(response.data);
       setError(null);
     } catch (err) {
@@ -52,7 +53,7 @@ const useTickets = () => {
   // Función para obtener los tipos de tickets
   const fetchTicketTypes = async () => {
     try {
-      const response = await axios.get<TicketType[]>("https://nationalmuseum2.somee.com/api/TicketType");
+      const response = await myApi.get<TicketType[]>("https://nationalmuseum2.somee.com/api/TicketType");
       setTicketTypes(response.data);
     } catch (err) {
       console.error("Error al cargar los tipos de ticket:", err);
@@ -62,7 +63,7 @@ const useTickets = () => {
   // Función para obtener los métodos de pago
   const fetchPaymentMethods = async () => {
     try {
-      const response = await axios.get<PaymentMethod[]>("https://nationalmuseum2.somee.com/api/PaymentMethod");
+      const response = await myApi.get<PaymentMethod[]>("https://nationalmuseum2.somee.com/api/PaymentMethod");
       setPaymentMethods(response.data);
     } catch (err) {
       console.error("Error al cargar los métodos de pago:", err);
@@ -83,7 +84,7 @@ const useTickets = () => {
 
       console.log("Request body:", requestBody);
 
-      await axios.put("https://nationalmuseum2.somee.com/api/Tickets", requestBody);
+      await myApi.put("/Tickets", requestBody);
       setTickets((prevTickets) =>
         prevTickets.map((ticket) => (ticket.ticketId === updatedTicket.ticketId ? updatedTicket : ticket))
       );
@@ -98,7 +99,7 @@ const useTickets = () => {
   // Función para eliminar un ticket
   const deleteTicket = async (ticketId: number) => {
     try {
-      await axios.delete(`https://nationalmuseum2.somee.com/api/Tickets/${ticketId}`);
+      await myApi.delete(`https://nationalmuseum2.somee.com/api/Tickets/${ticketId}`);
       setTickets((prevTickets) => prevTickets.filter((ticket) => ticket.ticketId !== ticketId));
       return true;
     } catch (err) {

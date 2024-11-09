@@ -17,7 +17,7 @@ function useCategories() {
     setLoading(true)
     setError(null)
     try{
-      const response = await myApi.delete<Categories[]>("https://nationalmuseum2.somee.com/api/Category");
+      const response = await myApi.delete<Categories[]>("/Category");
       setCategories(response.data);
     } catch (err){
       setError("Error fetching categories.");
@@ -31,7 +31,7 @@ function useCategories() {
     setLoading(true);
     setError(null);
     try {
-      const response = await myApi.get<Categories[]>("https://nationalmuseum2.somee.com/api/Category");
+      const response = await myApi.get<Categories[]>("/Category");
       setCategories(response.data);
     } catch (err) {
       setError("Error fetching categories.");

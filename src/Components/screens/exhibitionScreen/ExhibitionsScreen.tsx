@@ -1,7 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState,} from "react";
 import { Table, Button, message, Modal, Input, Form } from "antd";
 import { EditOutlined, SaveOutlined, CloseOutlined, DeleteOutlined } from "@ant-design/icons";
 import useExhibitions from "../../../hooks/useExhibition";
+import "./ExhibitionsScreen.css"; // Asegúrate de que el archivo CSS esté vinculado correctamente
+import { useAuth } from "../../../Context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const { Column } = Table;
 const { Search } = Input;
@@ -12,7 +15,11 @@ const ExhibitionsScreen = () => {
   const [form] = Form.useForm();
   const [searchTextExhibition, setSearchTextExhibition] = useState("");
   const [searchTextArtRoom, setSearchTextArtRoom] = useState("");
-
+  const {state} = useAuth()
+  const navigate = useNavigate()
+  if (!state.user) {
+    navigate("/login")
+  }
   const startEditing = (record: any) => {
     setEditingKey("exhibitionId" in record ? record.exhibitionId : record.artRoomId);
     form.setFieldsValue({ ...record });
@@ -70,15 +77,23 @@ const ExhibitionsScreen = () => {
   if (error) return <div>{error}</div>;
 
   return (
-    <div>
-      <h3>Gestión de Exposiciones</h3>
+    <div className="exhibitions-container">
+      <h3 className="exhibitions-title">Gestión de Exposiciones y Salas de Arte</h3>
+      
+      {/* Sección de Exposiciones */}
+      <h4>Exposiciones</h4>
       <Search
-        placeholder="Buscar por nombre o número de sala"
+        placeholder="Buscar exposición por nombre o número de sala"
         onChange={(e) => setSearchTextExhibition(e.target.value)}
         style={{ marginBottom: 16 }}
       />
       <Form form={form} component={false}>
-        <Table dataSource={filteredExhibitions} rowKey="exhibitionId" pagination={{ pageSize: 5 }}>
+        <Table 
+          className="exhibition-table" 
+          dataSource={filteredExhibitions} 
+          rowKey="exhibitionId" 
+          pagination={{ pageSize: 5 }}
+        >
           <Column title="Nombre de la Exposición" dataIndex="name" key="name"
             render={(text, record: any) => {
               return editingKey === record.exhibitionId ? (
@@ -105,7 +120,7 @@ const ExhibitionsScreen = () => {
           <Column
             title="Acciones"
             key="actions"
-            render={(text, record: any) => {
+            render={(_, record: any) => {
               const editable = editingKey === record.exhibitionId;
               return editable ? (
                 <>
@@ -123,14 +138,20 @@ const ExhibitionsScreen = () => {
         </Table>
       </Form>
 
-      <h3>Salas de Arte</h3>
+      {/* Sección de Salas de Arte */}
+      <h4>Salas de Arte</h4>
       <Search
-        placeholder="Buscar por nombre o número de sala"
+        placeholder="Buscar sala de arte por nombre o número"
         onChange={(e) => setSearchTextArtRoom(e.target.value)}
         style={{ marginBottom: 16 }}
       />
       <Form form={form} component={false}>
-        <Table dataSource={filteredArtRooms} rowKey="artRoomId" pagination={{ pageSize: 5 }}>
+        <Table 
+          className="exhibition-table" 
+          dataSource={filteredArtRooms} 
+          rowKey="artRoomId" 
+          pagination={{ pageSize: 5 }}
+        >
           <Column title="Nº Sala" dataIndex="artRoomId" key="artRoomId" />
           <Column title="Nombre de la Sala" dataIndex="name" key="name"
             render={(text, record: any) => {
@@ -157,7 +178,7 @@ const ExhibitionsScreen = () => {
           <Column
             title="Acciones"
             key="actions"
-            render={(text, record: any) => {
+            render={(_, record: any) => {
               const editable = editingKey === record.artRoomId;
               return editable ? (
                 <>

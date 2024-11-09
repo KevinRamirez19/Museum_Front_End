@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import myApi from "../assets/lib/axios/myApi";
 
 interface User {
   names: string;
@@ -37,7 +38,7 @@ const useEmployees = () => {
   const fetchEmployees = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("/api/employees");
+      const response = await myApi.get("/employees");
       const employeesData = response.data.map((employee: any) => ({
         ...employee,
         user: employee.user || {
@@ -57,7 +58,7 @@ const useEmployees = () => {
 
   const fetchTypeEmployees = async () => {
     try {
-      const response = await axios.get("/api/typeEmployees");
+      const response = await myApi.get("/typeEmployees");
       setTypeEmployees(response.data);
     } catch (err) {
       setError("Error al cargar los tipos de empleados.");
@@ -66,7 +67,7 @@ const useEmployees = () => {
 
   const fetchWorkSchedules = async () => {
     try {
-      const response = await axios.get("/api/workSchedules");
+      const response = await myApi.get("/workSchedules");
       setWorkSchedules(response.data);
     } catch (err) {
       setError("Error al cargar los horarios de trabajo.");
@@ -75,7 +76,7 @@ const useEmployees = () => {
 
   const updateEmployee = async (employee: Employee) => {
     try {
-      await axios.put(`/api/employees/${employee.employeeId}`, employee);
+      await myApi.put(`/employees/${employee.employeeId}`, employee);
       await fetchEmployees();
       return true;
     } catch (err) {
@@ -85,7 +86,7 @@ const useEmployees = () => {
 
   const deleteEmployee = async (employeeId: number) => {
     try {
-      await axios.delete(`/api/employees/${employeeId}`);
+      await myApi.delete(`/employees/${employeeId}`);
       await fetchEmployees();
       return true;
     } catch (err) {

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import myApi from "../assets/lib/axios/myApi";
 
 interface Scenary {
   scenaryId: number;
@@ -16,7 +17,7 @@ const useScenaries = () => {
   // Obtener los escenarios
   const fetchScenaries = async () => {
     try {
-      const response = await axios.get<Scenary[]>('https://nationalmuseum2.somee.com/api/Scenary');
+      const response = await myApi.get<Scenary[]>("/Scenary");
       setScenaries(response.data);
     } catch (error) {
       setError("Error al cargar los escenarios.");
@@ -29,7 +30,7 @@ const useScenaries = () => {
   // Eliminar un escenario
   const deleteScenary = async (scenaryId: number) => {
     try {
-      await axios.delete(`https://nationalmuseum2.somee.com/api/Scenary/${scenaryId}`);
+      await myApi.delete(`/Scenary/${scenaryId}`);
       setScenaries((prevScenaries) => prevScenaries.filter((scenary) => scenary.scenaryId !== scenaryId));
       return true;
     } catch (error) {

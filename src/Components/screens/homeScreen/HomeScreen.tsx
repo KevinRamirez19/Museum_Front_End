@@ -1,7 +1,8 @@
-import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faBullseye, faInfoCircle, faHistory } from "@fortawesome/free-solid-svg-icons";
 import './HomeScreen.css';
+import { useAuth } from "../../../Context/AuthContext";
+import { useState } from "react";
 
 interface ArtRoom {
   nombre: string;
@@ -52,7 +53,9 @@ const artRoomsXImage = artRooms.map((artRoom) => ({
 
 const HomeScreen: React.FC = () => {
   const [selectedRoom, setSelectedRoom] = useState<ArtRoom | null>(null);
-
+  const {state}=useAuth()
+  console.log(state);
+  
   const handleRoomClick = (artRoom: ArtRoom) => {
     setSelectedRoom(artRoom);
   };

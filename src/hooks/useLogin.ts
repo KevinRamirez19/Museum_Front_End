@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import axios from 'axios';
 import { message } from 'antd';
+import myApi from '../assets/lib/axios/myApi';
 
 interface IloginForm {
   email: string;
@@ -13,7 +13,7 @@ export const useLogin = () => {
   const login = async (formLogin: IloginForm) => {
     setLoading(true);
     try {
-      const response = await axios.post('https://nationalmuseum2.somee.com/api/Login', formLogin);
+      const response = await myApi.post("/Login", formLogin);
       if (response.data.token) {
         localStorage.setItem('token', response.data.token); // Guarda el token
         message.success('Inicio de sesión exitoso');
