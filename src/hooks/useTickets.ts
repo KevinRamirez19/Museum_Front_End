@@ -74,11 +74,11 @@ const useTickets = () => {
     try {
       const requestBody = {
         ticketId: updatedTicket.ticketId,
+        employeeId: updatedTicket.employeeId,
         user_Id: updatedTicket.user.user_Id,
         visitDate: dayjs(updatedTicket.visitDate).toISOString(),
         ticketType_Id: updatedTicket.ticketType.ticketTypeId,
         paymentMethod_Id: updatedTicket.paymentMethod.paymentMethodId,
-        employeeId: updatedTicket.employeeId,
       };
 
       console.log("Request body:", requestBody);

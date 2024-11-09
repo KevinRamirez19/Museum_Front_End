@@ -1,199 +1,130 @@
+// src/components/EmployeesScreen.tsx
 import { useState } from "react";
-import { Table, Input, Modal, message, Button, DatePicker, Select } from "antd";
-import useEmployees from "../../../hooks/useEmployees";
-import dayjs from "dayjs";
+import { Table, Button, message, Modal, Input, Form } from "antd";
+import { EditOutlined, SaveOutlined, CloseOutlined, DeleteOutlined } from "@ant-design/icons";
+import useEmployees from "../../../hooks/useEmployees"; // Ajusta la ruta según tu estructura de carpetas
 
-const { Option } = Select;
-
-// Definir Empleado
-interface Employee {
-  employeeId: number;
-  hireDate: string;
-  workShedule: { workSheduleId: number; workShedule: string };
-  typeEmployee: { typeEmployeeId: number; typeEmployee: string };
-  user: {
-    user_Id: number;
-    names: string;
-    lastNames: string;
-    identificationNumber: string;
-  };
-}
+const { Column } = Table;
+const { Search } = Input;
 
 const EmployeesScreen = () => {
-  const {
-    employees,
-    workShedule,
-    typeEmployee,
-    loading,
-    error,
-    updateEmployee,
-    deleteEmployee,
-  } = useEmployees();
+  const { employees, users, typeEmployees, workSchedules, loading, error, updateEmployee, deleteEmployee } = useEmployees();
   const [editingKey, setEditingKey] = useState<number | null>(null);
-  const [editedEmployee, setEditedEmployee] = useState<Employee | null>(null);
-  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [form] = Form.useForm();
+  const [searchText, setSearchText] = useState("");
 
-  const edit = (record: Employee) => {
+  // Función para obtener el nombre completo del usuario
+  const getUserName = (userId: number) => {
+    const user = users.find((u) => u.userId === userId);
+    return user ? `${user.names} ${user.lastNames}` : "Desconocido";
+  };
+
+  // Función para obtener el tipo de empleado
+  const getTypeEmployee = (typeEmployeeId: number) => {
+    const typeEmployee = typeEmployees.find((t) => t.typeEmployeeId === typeEmployeeId);
+    return typeEmployee ? typeEmployee.typeEmployee : "Desconocido";
+  };
+
+  // Función para obtener el horario de trabajo
+  const getWorkSchedule = (workSheduleId: number) => {
+    const workSchedule = workSchedules.find((w) => w.workSheduleId === workSheduleId);
+    return workSchedule ? workSchedule.workShedule : "Desconocido";
+  };
+
+  // Función para iniciar la edición de un registro
+  const startEditing = (record: any) => {
+    form.setFieldsValue({ ...record });
     setEditingKey(record.employeeId);
-    setEditedEmployee({ ...record });
   };
 
-  const save = async () => {
-    if (!editedEmployee) return;
-
-    Modal.confirm({
-      title: "¿Está seguro de que desea guardar los cambios?",
-      onOk: async () => {
-        const success = await updateEmployee(editedEmployee);
-        if (success) {
-          message.success("Cambios guardados exitosamente");
-          setEditingKey(null);
-          setEditedEmployee(null);
-        } else {
-          message.error("Error al guardar los cambios");
-        }
-      },
-      onCancel: () => {
-        setEditingKey(null);
-      },
-    });
-  };
-
-  const cancel = () => {
+  // Función para cancelar la edición
+  const cancelEditing = () => {
     setEditingKey(null);
-    setEditedEmployee(null);
   };
 
-  const handleFieldChange = (value: any, field: string) => {
-    if (field === "workShedule" || field === "typeEmployee") {
-      setEditedEmployee({
-        ...editedEmployee!,
-        [field]: { ...editedEmployee![field], [`${field}Id`]: value },
-      });
-    } else {
-      setEditedEmployee({
-        ...editedEmployee!,
-        [field]: value,
-      });
+  // Función para guardar los cambios de edición
+  const save = async (record: any) => {
+    try {
+      const updatedEmployee = { ...record, ...form.getFieldsValue() };
+      await updateEmployee(updatedEmployee);
+      setEditingKey(null);
+      message.success("Empleado actualizado correctamente.");
+    } catch {
+      message.error("Error al actualizar el empleado.");
     }
   };
 
-  const handleDelete = (employeeId: number) => {
+  // Función para confirmar y eliminar un empleado
+  const confirmDelete = (record: any) => {
     Modal.confirm({
-      title: "¿Está seguro de que desea eliminar este empleado?",
+      title: "¿Estás seguro de que deseas eliminar este empleado?",
+      okText: "Sí",
+      okType: "danger",
+      cancelText: "No",
       onOk: async () => {
-        const success = await deleteEmployee(employeeId);
-        if (success) {
-          message.success("Empleado eliminado exitosamente");
-        } else {
-          message.error("Error al eliminar el empleado");
+        try {
+          await deleteEmployee(record.employeeId);
+          message.success("Empleado eliminado correctamente.");
+        } catch {
+          message.error("Error al eliminar el empleado.");
         }
       },
     });
   };
 
-  const filteredEmployees = employees.filter((employee) => {
-    const fullName = `${employee.user.names} ${employee.user.lastNames}`.toLowerCase();
-    return fullName.includes(searchTerm.toLowerCase());
-  });
-
-  const employeeColumns = [
-    { title: "ID Empleado", dataIndex: "employeeId", key: "employeeId" },
-    {
-      title: "Nombre Completo",
-      dataIndex: "user",
-      key: "userName",
-      render: (_: any, record: Employee) => `${record.user.names} ${record.user.lastNames}`,
-    },
-    {
-      title: "Fecha de Contratación",
-      dataIndex: "hireDate",
-      key: "hireDate",
-      render: (_: any, record: Employee) =>
-        editingKey === record.employeeId ? (
-          <DatePicker
-            value={dayjs(editedEmployee?.hireDate)}
-            onChange={(date) => handleFieldChange(date?.toISOString(), "hireDate")}
-          />
-        ) : (
-          dayjs(record.hireDate).format("DD/MM/YYYY")
-        ),
-    },
-    {
-      title: "Cargo",
-      dataIndex: ["workShedule", "workShedule"],
-      key: "workShedule",
-      render: (_: any, record: Employee) =>
-        editingKey === record.employeeId ? (
-          <Select
-            value={editedEmployee?.workShedule?.workSheduleId}
-            onChange={(value) => handleFieldChange(value, "workShedule")}
-            style={{ width: 200 }}
-          >
-            {workShedule.map((position) => (
-              <Option key={position.workSheduleId} value={position.workSheduleId}>
-                {position.workShedule}
-              </Option>
-            ))}
-          </Select>
-        ) : (
-          record.workShedule.workShedule
-        ),
-    },
-    {
-      title: "Tipo de Empleado",
-      dataIndex: ["typeEmployee", "typeEmployee"],
-      key: "typeEmployee",
-      render: (_: any, record: Employee) =>
-        editingKey === record.employeeId ? (
-          <Select
-            value={editedEmployee?.typeEmployee?.typeEmployeeId}
-            onChange={(value) => handleFieldChange(value, "typeEmployee")}
-            style={{ width: 200 }}
-          >
-            {typeEmployee.map((type) => (
-              <Option key={type.typeEmployeeId} value={type.typeEmployeeId}>
-                {type.typeEmployee}
-              </Option>
-            ))}
-          </Select>
-        ) : (
-          record.typeEmployee.typeEmployee
-        ),
-    },
-    {
-      title: "Acciones",
-      key: "actions",
-      render: (_: any, record: Employee) =>
-        editingKey === record.employeeId ? (
-          <>
-            <Button onClick={save}>Guardar</Button>
-            <Button onClick={cancel}>Cancelar</Button>
-          </>
-        ) : (
-          <>
-            <Button onClick={() => edit(record)}>Editar</Button>
-            <Button onClick={() => handleDelete(record.employeeId)}>Eliminar</Button>
-          </>
-        ),
-    },
-  ];
-
+  // Renderizado de la tabla y sus columnas
   return (
     <div>
-      <h1>Gestión de Empleados</h1>
-      <Input.Search
-        placeholder="Buscar por nombre"
-        onSearch={(value) => setSearchTerm(value)}
+      <h3>Gestión de Empleados</h3>
+      <Search
+        placeholder="Buscar por ID de empleado"
+        onChange={(e) => setSearchText(e.target.value)}
         style={{ marginBottom: 16 }}
       />
-      <Table
-        columns={employeeColumns}
-        dataSource={filteredEmployees}
-        rowKey="employeeId"
-        loading={loading}
-      />
-      {error && <p>{error}</p>}
+      <Form form={form} component={false}>
+        <Table dataSource={employees} rowKey="employeeId" pagination={{ pageSize: 5 }} loading={loading}>
+          <Column title="ID Empleado" dataIndex="employeeId" key="employeeId" />
+          <Column title="Nombre de Usuario" key="user_Id"
+            render={(_, record: any) => getUserName(record.user_Id)}
+          />
+          <Column title="Tipo de Empleado" key="typeEmployee_Id"
+            render={(_, record: any) => getTypeEmployee(record.typeEmployee_Id)}
+          />
+          <Column title="Horario de Trabajo" key="workShedule_Id"
+            render={(_, record: any) => getWorkSchedule(record.workShedule_Id)}
+          />
+          <Column
+            title="Fecha de Contratación"
+            dataIndex="hiringDate"
+            key="hiringDate"
+            render={(hiringDate: string) => new Date(hiringDate).toLocaleDateString("es-ES", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
+          />
+          
+          <Column
+            title="Acciones"
+            key="actions"
+            render={(_, record: any) => {
+              const editable = editingKey === record.employeeId;
+              return editable ? (
+                <>
+                  <Button onClick={() => save(record)} icon={<SaveOutlined />} />
+                  <Button onClick={cancelEditing} icon={<CloseOutlined />} />
+                </>
+              ) : (
+                <>
+                  <Button onClick={() => startEditing(record)} icon={<EditOutlined />} />
+                  <Button onClick={() => confirmDelete(record)} icon={<DeleteOutlined />} danger />
+                </>
+              );
+            }}
+          />
+        </Table>
+      </Form>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
     </div>
   );
 };

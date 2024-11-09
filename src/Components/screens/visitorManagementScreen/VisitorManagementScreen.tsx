@@ -111,6 +111,13 @@ const VisitorManagementScreen = () => {
       key: "userName",
       render: (_: any, record: Ticket) => `${record.user.names} ${record.user.lastNames}`,
     },
+    
+    {
+      title: "Numero de documento",
+      dataIndex: "employeeId",
+      key: "employee",
+      render: (_: any, record: Ticket) => record.user.identificationNumber,
+    },
     {
       title: "Fecha de Visita",
       dataIndex: "visitDate",
@@ -166,12 +173,6 @@ const VisitorManagementScreen = () => {
         ) : (
           record.paymentMethod.paymentMethod
         ),
-    },
-    {
-      title: "Empleado",
-      dataIndex: "employeeId",
-      key: "employee",
-      render: (_: any, record: Ticket) => record.user.identificationNumber,
     },
     {
       title: "Acciones",
