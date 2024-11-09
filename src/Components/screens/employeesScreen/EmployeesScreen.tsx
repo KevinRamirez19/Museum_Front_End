@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Table, Button, message, Modal, Input, Form, Select, DatePicker } from "antd";
 import { EditOutlined, SaveOutlined, CloseOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import useEmployees from "../../../hooks/useEmployees"; // Ajusta la ruta según tu estructura de carpetas
-import dayjs from "dayjs";
 
 const { Column } = Table;
 const { Search } = Input;
@@ -118,7 +117,6 @@ const EmployeesScreen = () => {
       />
       <Form form={form} component={false}>
         <Table dataSource={filteredEmployees} rowKey="employeeId" pagination={{ pageSize: 5 }} loading={loading}>
-          <Column title="ID Empleado" dataIndex="employeeId" key="employeeId" />
           <Column title="Nombre de Usuario" key="user_Id"
             render={(_, record: any) => getUserName(record.user_Id)}
           />
