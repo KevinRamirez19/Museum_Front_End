@@ -38,21 +38,35 @@ const useArtObjects = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Función para obtener los objetos de arte
-  const fetchArtObjects = async () => {
-    setLoading(true);
-    try {
-      const response = await myApi.get<ArtObjectType[]>("/ArtObject");
-      setArtObjects(response.data);
-    } catch (err) {
-      setError("Error al cargar los objetos de arte.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const [artObjectsResponse, exhibitionsResponse, statesResponse, categoriesResponse] = await Promise.all([
+          axios.get('https://nationalmuseum2.somee.com/api/ArtObject'),
+          axios.get('https://nationalmuseum2.somee.com/api/Exhibition'),
+          axios.get('https://nationalmuseum2.somee.com/api/State'),
+          axios.get('https://nationalmuseum2.somee.com/api/Category'),
+        ]);
+  
+        setArtObjects(artObjectsResponse.data);
+        setExhibitions(exhibitionsResponse.data);
+        setStates(statesResponse.data);
+        setCategories(categoriesResponse.data);
+  
+        console.log('Art Objects:', artObjectsResponse.data); // Agrega este log
+      } catch (err) {
+        setError('Error al cargar los datos');
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchData();
+  }, []);
+  
 
-  // Función para actualizar un objeto de arte
-  const updateArtObject = async (updatedArtObject: ArtObjectType) => {
+  const createArtObject = async (artObject: ArtObjectType) => {
     try {
       await axios.post('https://nationalmuseum2.somee.com/api/ArtObject', artObject);
     } catch (err) {
