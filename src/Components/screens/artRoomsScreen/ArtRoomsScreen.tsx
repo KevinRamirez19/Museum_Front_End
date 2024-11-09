@@ -118,7 +118,7 @@ const ArtObjectsScreen = () => {
           <Column
             title="Acciones"
             key="actions"
-            render={(text, record: any) => {
+            render={(_, record: any) => {
               const editable = editingKey === record.artObjectId;
               return editable ? (
                 <>
