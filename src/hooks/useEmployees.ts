@@ -1,15 +1,9 @@
 // src/hooks/useEmployees.ts
 import { useState, useEffect } from "react";
-import myApi from "../assets/lib/axios/myApi";
+import axios from "axios";
 
-interface User {
-  names: string;
-  lastNames: string;
-  identificationNumber: string;
-  contact: string;
-}
-
-interface Employee {
+// Tipos de datos para empleados y sus relaciones
+interface EmployeeType {
   employeeId: number;
   user_Id: number;
   typeEmployee_Id: number;
@@ -50,18 +44,8 @@ const useEmployees = () => {
   // Función para obtener empleados
   const fetchEmployees = async () => {
     try {
-      setLoading(true);
-      const response = await myApi.get("/employees");
-      const employeesData = response.data.map((employee: any) => ({
-        ...employee,
-        user: employee.user || {
-          names: "N/A",
-          lastNames: "N/A",
-          identificationNumber: "N/A",
-          contact: "N/A",
-        },
-      }));
-      setEmployees(employeesData);
+      const response = await axios.get<EmployeeType[]>(API_EMPLOYEES);
+      setEmployees(response.data);
     } catch (err) {
       setError("Error al cargar los empleados.");
     }
@@ -70,8 +54,8 @@ const useEmployees = () => {
   // Función para obtener usuarios
   const fetchUsers = async () => {
     try {
-      const response = await myApi.get("/typeEmployees");
-      setTypeEmployee(response.data);
+      const response = await axios.get<UserType[]>(API_USERS);
+      setUsers(response.data);
     } catch (err) {
       setError("Error al cargar los usuarios.");
     }
@@ -80,8 +64,18 @@ const useEmployees = () => {
   // Función para obtener tipos de empleado
   const fetchTypeEmployees = async () => {
     try {
-      const response = await myApi.get("/workSchedules");
-      setWorkShedule(response.data);
+      const response = await axios.get<TypeEmployeeType[]>(API_TYPE_EMPLOYEE);
+      setTypeEmployees(response.data);
+    } catch (err) {
+      setError("Error al cargar los tipos de empleados.");
+    }
+  };
+
+  // Función para obtener horarios de trabajo
+  const fetchWorkSchedules = async () => {
+    try {
+      const response = await axios.get<WorkSheduleType[]>(API_WORK_SHEDULE);
+      setWorkSchedules(response.data);
     } catch (err) {
       setError("Error al cargar los horarios de trabajo.");
     }
@@ -96,12 +90,13 @@ const useEmployees = () => {
   }, []);
 
   // Función para actualizar un empleado
-  const updateEmployee = async (_updatedEmployee: Employee) => {
+  const updateEmployee = async (updatedEmployee: EmployeeType) => {
     try {
-      await myApi.put(`/employees/${employees.employeeId}`, employees);
-      await fetchEmployees();
-      return true;
-    } catch (err) {
+      await axios.put(API_EMPLOYEES, updatedEmployee);
+      setEmployees((prev) =>
+        prev.map((emp) => (emp.employeeId === updatedEmployee.employeeId ? updatedEmployee : emp))
+      );
+    } catch (err: any) {
       setError("Error al actualizar el empleado.");
     }
   };
@@ -109,9 +104,8 @@ const useEmployees = () => {
   // Función para eliminar un empleado
   const deleteEmployee = async (employeeId: number) => {
     try {
-      await myApi.delete(`/employees/${employeeId}`);
-      await fetchEmployees();
-      return true;
+      await axios.delete(`${API_EMPLOYEES}/${employeeId}`);
+      setEmployees((prev) => prev.filter((employee) => employee.employeeId !== employeeId));
     } catch (err) {
       setError("Error al eliminar el empleado.");
     }
