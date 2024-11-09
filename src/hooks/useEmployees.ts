@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+
 import myApi from "../assets/lib/axios/myApi";
 
 interface User {
@@ -67,7 +67,7 @@ const useEmployees = () => {
   const fetchWorkShedule = async () => {
     try {
       const response = await myApi.get("/typeEmployees");
-      setTypeEmployees(response.data);
+      setTypeEmployee(response.data);
     } catch (err) {
       console.error("Error al cargar los horarios:", err);
     }
@@ -77,7 +77,7 @@ const useEmployees = () => {
   const fetchTypeEmployees = async () => {
     try {
       const response = await myApi.get("/workSchedules");
-      setWorkSchedules(response.data);
+      setWorkShedule(response.data);
     } catch (err) {
       console.error("Error al cargar los tipos de empleados:", err);
     }
@@ -86,7 +86,7 @@ const useEmployees = () => {
   // Función para actualizar un empleado
   const updateEmployee = async (updatedEmployee: Employee) => {
     try {
-      await myApi.put(`/employees/${employee.employeeId}`, employee);
+      await myApi.put(`/employees/${employees.employeesId}`, employees);
       await fetchEmployees();
       return true;
     } catch (err) {
