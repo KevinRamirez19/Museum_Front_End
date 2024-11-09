@@ -54,7 +54,7 @@ const useArtObjects = () => {
   const fetchArtObjects = async () => {
     setLoading(true);
     try {
-      const response = await myApi.get<ArtObjectType[]>("ArtObject");
+      const response = await myApi.get<ArtObjectType[]>("/ArtObject");
       setArtObjects(response.data);
     } catch (err) {
       setError("Error al cargar los objetos de arte.");

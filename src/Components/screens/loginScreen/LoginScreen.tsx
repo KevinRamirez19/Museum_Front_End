@@ -1,13 +1,15 @@
-import React, { } from 'react';
+// src/components/LoginScreen.tsx
+import React, { useState } from 'react';
 import { UserOutlined, MailOutlined, LockOutlined } from '@ant-design/icons';
-import { Button, Input, message } from 'antd';
+import { Button, Input, message, Modal } from 'antd';
 import './LoginScreen.css';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema } from '../../../assets/lib/zod/validations';
-import { useAuth } from '../../../Context/AuthContext'; // Importa el contexto
+import { useAuth } from '../../../Context/AuthContext';
 import myApi from '../../../assets/lib/axios/myApi';
 import { useNavigate } from 'react-router-dom';
+import RegisterForm from './RegisterForm'; // Importa tu formulario de registro
 
 interface IloginForm {
   email: string;
@@ -15,13 +17,15 @@ interface IloginForm {
 }
 
 const LoginScreen: React.FC = () => {
-  const { login, state } = useAuth(); // Usa el contexto de autenticación
+  const { login, state } = useAuth();
   const { control, handleSubmit, formState: { errors } } = useForm<IloginForm>({
     defaultValues: { email: "", password: "" },
     resolver: zodResolver(loginSchema),
   });
-  const navigate = useNavigate()
-  console.log(state);
+  const navigate = useNavigate();
+  
+  const [isModalVisible, setIsModalVisible] = useState(false); // Estado para controlar el modal
+
   const validatedLogin = async (formLogin: IloginForm) => {
     try {
       const valid = await myApi.post("/login", formLogin);
@@ -33,35 +37,32 @@ const LoginScreen: React.FC = () => {
       return false;
     }
     return false;
-  }
-  // Maneja el evento de inicio de sesión
+  };
 
-  const handleLogin = async (formLogin: IloginForm) => { // Funcion asyncrona
-    const valid = await validatedLogin(formLogin)
+  const handleLogin = async (formLogin: IloginForm) => {
+    const valid = await validatedLogin(formLogin);
     console.log(formLogin);
 
     if (!valid) {
-      message.error("Credenciales Invalidas")
-      return
+      message.error("Credenciales Invalidas");
+      return;
     }
 
-    // Supongamos que has autenticado al usuario correctamente aquí
     const user = {
       email: formLogin.email,
     };
 
-    // Envía la acción para establecer el usuario en el contexto
     login(user);
-    navigate("/")
- 
-
+    navigate("/");
     console.log(state);
-
   };
 
-  // Maneja el evento de registro
-  const handleRegister = () => {
-    console.log('Ir a Registrarse');
+  const showRegisterModal = () => {
+    setIsModalVisible(true); // Muestra el modal
+  };
+
+  const handleModalCancel = () => {
+    setIsModalVisible(false); // Cierra el modal
   };
 
   return (
@@ -103,10 +104,20 @@ const LoginScreen: React.FC = () => {
           </Button>
         </form>
         <p className="register-text">¿No tienes cuenta?</p>
-        <Button type="link" onClick={handleRegister} className="register-button">
+        <Button type="link" onClick={showRegisterModal} className="register-button">
           Registrarse
         </Button>
       </div>
+
+      {/* Modal para el formulario de registro */}
+      <Modal
+        title="Registro de Usuario"
+        visible={isModalVisible}
+        onCancel={handleModalCancel}
+        footer={null} // No mostrar los botones predeterminados de 'Ok' y 'Cancel'
+      >
+        <RegisterForm /> {/* Muestra el formulario de registro en el modal */}
+      </Modal>
     </div>
   );
 };
