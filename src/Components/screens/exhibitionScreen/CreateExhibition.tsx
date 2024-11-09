@@ -1,39 +1,41 @@
 import React, { useState } from "react";
-import { Form, Input, DatePicker, Button, Typography } from "antd";
-import dayjs from "dayjs";
+import { Form, Input, Button, Typography, Select } from "antd";
 
 const { Title } = Typography;
+const { Option } = Select;
 
 interface Exhibition {
   nombre: string;
-  fechaDeInicio: string | null;
-  fechaFinal: string | null;
-  estado: string;
+  descripcion: string;
+  salaId: string | null;
+}
+
+interface Room {
+  id: string;
+  name: string;
 }
 
 interface CreateExhibitionProps {
   onAdd: (exhibition: Exhibition) => void;
+  rooms: Room[]; // Lista de salas
 }
 
-const CreateExhibition: React.FC<CreateExhibitionProps> = ({ onAdd }) => {
+export const CreateExhibition: React.FC<CreateExhibitionProps> = ({ onAdd, rooms }) => {
   const [nombre, setNombre] = useState<string>("");
-  const [fechaDeInicio, setFechaDeInicio] = useState<any>(null);
-  const [fechaFinal, setFechaFinal] = useState<any>(null);
-  const [estado, setEstado] = useState<string>("");
+  const [descripcion, setDescripcion] = useState<string>("");
+  const [salaId, setSalaId] = useState<string | null>(null);
 
   const handleSubmit = () => {
     const newExhibition: Exhibition = {
       nombre,
-      fechaDeInicio: fechaDeInicio ? fechaDeInicio.format("YYYY-MM-DD") : null,
-      fechaFinal: fechaFinal ? fechaFinal.format("YYYY-MM-DD") : null,
-      estado,
+      descripcion,
+      salaId,
     };
 
     onAdd(newExhibition);
     setNombre("");
-    setFechaDeInicio(null);
-    setFechaFinal(null);
-    setEstado("");
+    setDescripcion("");
+    setSalaId(null);
   };
 
   return (
@@ -57,26 +59,25 @@ const CreateExhibition: React.FC<CreateExhibitionProps> = ({ onAdd }) => {
           placeholder="Ingrese el nombre de la exhibición"
         />
       </Form.Item>
-      <Form.Item label="Fecha de Inicio" required>
-        <DatePicker
-          value={fechaDeInicio ? dayjs(fechaDeInicio) : null}
-          onChange={(date) => setFechaDeInicio(date)}
-          placeholder="Seleccione la fecha de inicio"
+      <Form.Item label="Descripción de la Exhibición" required>
+        <Input.TextArea
+          value={descripcion}
+          onChange={(e) => setDescripcion(e.target.value)}
+          placeholder="Ingrese una descripción de la exhibición"
         />
       </Form.Item>
-      <Form.Item label="Fecha Final" required>
-        <DatePicker
-          value={fechaFinal ? dayjs(fechaFinal) : null}
-          onChange={(date) => setFechaFinal(date)}
-          placeholder="Seleccione la fecha final"
-        />
-      </Form.Item>
-      <Form.Item label="Estado" required>
-        <Input
-          value={estado}
-          onChange={(e) => setEstado(e.target.value)}
-          placeholder="Ingrese el estado (ej. Nuevo, Antiguo)"
-        />
+      <Form.Item label="Sala a la que pertenece" required>
+        <Select
+          value={salaId}
+          onChange={(value) => setSalaId(value)}
+          placeholder="Seleccione la sala"
+        >
+          {rooms.map((room) => (
+            <Option key={room.id} value={room.id}>
+              {room.name}
+            </Option>
+          ))}
+        </Select>
       </Form.Item>
       <Button type="primary" htmlType="submit" style={{ width: "100%" }}>
         Crear Exhibición

@@ -1,10 +1,12 @@
-import { useState,} from "react";
+import { useState } from "react";
 import { Table, Button, message, Modal, Input, Form } from "antd";
 import { EditOutlined, SaveOutlined, CloseOutlined, DeleteOutlined } from "@ant-design/icons";
 import useExhibitions from "../../../hooks/useExhibition";
-import "./ExhibitionsScreen.css"; // Asegúrate de que el archivo CSS esté vinculado correctamente
+import "./ExhibitionsScreen.css";
 import { useAuth } from "../../../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import CreateExhibition from "../exhibitionScreen/CreateExhibition";
+import CreateArtRoom from "../exhibitionScreen/CreateArtRoom"; // Importamos el nuevo componente
 
 const { Column } = Table;
 const { Search } = Input;
@@ -15,8 +17,12 @@ const ExhibitionsScreen = () => {
   const [form] = Form.useForm();
   const [searchTextExhibition, setSearchTextExhibition] = useState("");
   const [searchTextArtRoom, setSearchTextArtRoom] = useState("");
-  const { state } = useAuth(); // Se obtiene el estado del contexto de autenticación
+  const { state } = useAuth();
   const navigate = useNavigate();
+
+  // Estados para controlar modales de exhibición y sala de arte
+  const [isExhibitionModalVisible, setIsExhibitionModalVisible] = useState(false);
+  const [isArtRoomModalVisible, setIsArtRoomModalVisible] = useState(false);
 
   if (!state.user) {
     navigate("/login");
@@ -65,6 +71,18 @@ const ExhibitionsScreen = () => {
     });
   };
 
+  const handleAddExhibition = (_: any) => {
+    // Lógica para añadir la nueva exhibición
+    message.success("Exhibición creada exitosamente.");
+    setIsExhibitionModalVisible(false);
+  };
+
+  const handleAddArtRoom = (_: any) => {
+    // Lógica para añadir la nueva sala de arte
+    message.success("Sala de arte creada exitosamente.");
+    setIsArtRoomModalVisible(false);
+  };
+
   const filteredExhibitions = exhibitions.filter((exhibition) =>
     exhibition.name.toLowerCase().includes(searchTextExhibition.toLowerCase()) ||
     exhibition.artRoom.artRoomId.toString().includes(searchTextExhibition)
@@ -81,7 +99,39 @@ const ExhibitionsScreen = () => {
   return (
     <div className="exhibitions-container">
       <h3 className="exhibitions-title">Gestión de Exposiciones y Salas de Arte</h3>
-      
+
+      {/* Botones para abrir los modales de creación */}
+      {state.user?.userType === 1 && (
+        <>
+          <Button type="primary" onClick={() => setIsExhibitionModalVisible(true)} style={{ marginBottom: 16 }}>
+            Crear Nueva Exhibición
+          </Button>
+          <Button type="primary" onClick={() => setIsArtRoomModalVisible(true)} style={{ marginBottom: 16, marginLeft: 8 }}>
+            Crear Nueva Sala de Arte
+          </Button>
+        </>
+      )}
+
+      {/* Modal para crear una nueva exhibición */}
+      <Modal
+        title="Agregar Nueva Exhibición"
+        visible={isExhibitionModalVisible}
+        onCancel={() => setIsExhibitionModalVisible(false)}
+        footer={null}
+      >
+        <CreateExhibition onAdd={handleAddExhibition} rooms={[]} />
+      </Modal>
+
+      {/* Modal para crear una nueva sala de arte */}
+      <Modal
+        title="Agregar Nueva Sala de Arte"
+        visible={isArtRoomModalVisible}
+        onCancel={() => setIsArtRoomModalVisible(false)}
+        footer={null}
+      >
+        <CreateArtRoom onAdd={handleAddArtRoom} />
+      </Modal>
+
       {/* Sección de Exposiciones */}
       <h4>Exposiciones</h4>
       <Search
@@ -210,4 +260,3 @@ const ExhibitionsScreen = () => {
 };
 
 export default ExhibitionsScreen;
-
