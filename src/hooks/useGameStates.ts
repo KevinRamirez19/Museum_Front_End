@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import myApi from "../assets/lib/axios/myApi";
 
 interface GameStateData {
   gameStateId: number;
@@ -10,7 +10,7 @@ const useGameStates = () => {
   const [chartData, setChartData] = useState<{ name: string; value: number }[]>([]);
 
   useEffect(() => {
-    axios.get("https://nationalmuseum2.somee.com/api/GameState")
+    myApi.get("/GameState")
       .then((response) => {
         const gameStates: GameStateData[] = response.data;
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import myApi from "../assets/lib/axios/myApi";
 
 // Tipos de datos para el hook
 interface StateType {
@@ -54,7 +54,7 @@ const useArtObjects = () => {
   const fetchArtObjects = async () => {
     setLoading(true);
     try {
-      const response = await axios.get<ArtObjectType[]>("https://nationalmuseum2.somee.com/api/ArtObject");
+      const response = await myApi.get<ArtObjectType[]>("ArtObject");
       setArtObjects(response.data);
     } catch (err) {
       setError("Error al cargar los objetos de arte.");
@@ -104,7 +104,7 @@ const useArtObjects = () => {
       console.log("Datos enviados a la API:", JSON.stringify(completeObject, null, 2));
   
       // Solicitud PUT a la API
-      const response = await axios.put("https://nationalmuseum2.somee.com/api/ArtObject", completeObject);
+      const response = await myApi.put("/ArtObject", completeObject);
       console.log("Respuesta de la API:", response.data);
   
       // Actualizar el estado local
@@ -121,7 +121,7 @@ const useArtObjects = () => {
   // Función para eliminar un objeto de arte
   const deleteArtObject = async (artObjectId: number) => {
     try {
-      await axios.delete(`https://nationalmuseum2.somee.com/api/ArtObject/${artObjectId}`);
+      await myApi.delete(`/ArtObject/${artObjectId}`);
       setArtObjects((prev) => prev.filter((artObject) => artObject.artObjectId !== artObjectId));
     } catch (err) {
       setError("Error al eliminar el objeto de arte.");

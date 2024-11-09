@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+
+import myApi from "../assets/lib/axios/myApi";
 
 // Definir la interfaz de una Sala de Arte (ArtRoom)
 interface ArtRoom {
@@ -32,7 +33,7 @@ const useArtRooms = () => {
   // Función para obtener las salas de arte
   const fetchArtRooms = async () => {
     try {
-      const response = await axios.get<ArtRoom[]>("https://nationalmuseum2.somee.com/api/ArtRoom");
+      const response = await myApi.get<ArtRoom[]>("/ArtRoom");
       setArtRooms(response.data);
       setError(null);
     } catch (err) {
@@ -46,7 +47,7 @@ const useArtRooms = () => {
   // Función para obtener las ubicaciones
   const fetchLocations = async () => {
     try {
-      const response = await axios.get<Location[]>("https://nationalmuseum2.somee.com/api/Location");
+      const response = await myApi.get<Location[]>("/Location");
       setLocations(response.data);
     } catch (err) {
       console.error("Error al cargar las ubicaciones:", err);
@@ -56,7 +57,7 @@ const useArtRooms = () => {
   // Función para obtener las colecciones
   const fetchCollections = async () => {
     try {
-      const response = await axios.get<Collection[]>("https://nationalmuseum2.somee.com/api/Collection");
+      const response = await myApi.get<Collection[]>("/Collection");
       setCollections(response.data);
     } catch (err) {
       console.error("Error al cargar las colecciones:", err);
@@ -77,7 +78,7 @@ const useArtRooms = () => {
 
       console.log("Request body:", requestBody);
 
-      await axios.put("https://nationalmuseum2.somee.com/api/ArtRoom", requestBody);
+      await myApi.put("/ArtRoom", requestBody);
       setArtRooms((prevArtRooms) =>
         prevArtRooms.map((artRoom) =>
           artRoom.artRoomId === updatedArtRoom.artRoomId ? updatedArtRoom : artRoom
@@ -94,7 +95,7 @@ const useArtRooms = () => {
   // Función para eliminar una sala de arte
   const deleteArtRoom = async (artRoomId: number) => {
     try {
-      await axios.delete(`https://nationalmuseum2.somee.com/api/ArtRoom/${artRoomId}`);
+      await myApi.delete(`/ArtRoom/${artRoomId}`);
       setArtRooms((prevArtRooms) =>
         prevArtRooms.filter((artRoom) => artRoom.artRoomId !== artRoomId)
       );

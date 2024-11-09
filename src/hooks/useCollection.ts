@@ -1,6 +1,6 @@
 // hooks/useCollection.ts
 import { useState, useEffect } from "react";
-import axios from "axios";
+import myApi from "../assets/lib/axios/myApi";
 
 export interface Collection {
   collectionId: number;
@@ -16,7 +16,7 @@ const useCollections = () => {
   // Obtener las colecciones
   const fetchCollections = async () => {
     try {
-      const response = await axios.get<Collection[]>("https://nationalmuseum2.somee.com/api/Collection");
+      const response = await myApi.get<Collection[]>("/Collection");
       setCollections(response.data);
     } catch (error) {
       setError("Error al cargar las colecciones.");
@@ -29,7 +29,7 @@ const useCollections = () => {
   // Eliminar una colección
   const deleteCollection = async (collectionId: number) => {
     try {
-      await axios.delete(`https://nationalmuseum2.somee.com/api/Collection/${collectionId}`);
+      await myApi.delete(`/Collection/${collectionId}`);
       setCollections((prevCollections) =>
         prevCollections.filter((collection) => collection.collectionId !== collectionId)
       );
@@ -44,8 +44,8 @@ const useCollections = () => {
   // Actualizar una colección
   const updateCollection = async (updatedCollection: Collection) => {
     try {
-      await axios.put(
-        "https://nationalmuseum2.somee.com/api/Collection",
+      await myApi.put(
+        "/Collection",
         {
           collectionId: updatedCollection.collectionId,
           name: updatedCollection.name,
@@ -69,8 +69,8 @@ const useCollections = () => {
   // Agregar una nueva colección
   const addCollection = async (newCollection: Collection) => {
     try {
-      const response = await axios.post(
-        "https://nationalmuseum2.somee.com/api/Collection",
+      const response = await myApi.post(
+        "/Collection",
         newCollection,
         { headers: { "Content-Type": "application/json" } }
       );

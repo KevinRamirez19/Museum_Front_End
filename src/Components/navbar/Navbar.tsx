@@ -2,6 +2,7 @@ import { Menu } from "antd";
 import type { MenuProps } from "antd";
 import styled from 'styled-components';
 import { HomeOutlined, UnorderedListOutlined, AppstoreAddOutlined, UsergroupAddOutlined, FileDoneOutlined, LoginOutlined, AppstoreOutlined, TeamOutlined } from '@ant-design/icons'; // Importar TeamOutlined en lugar de EmployeesOutlined
+import { useAuth } from "../../Context/AuthContext";
 
 const StyledMenu = styled(Menu)`
   background-color: #fff; /* Fondo blanco */
@@ -34,23 +35,27 @@ const StyledMenu = styled(Menu)`
 type MenuItem = Required<MenuProps>["items"][number];
 
 function Navbar() {
+  const { logOut, state } = useAuth();
   const itemsNavbar: MenuItem[] = [
+    { key: "/", label: <a href="/"><HomeOutlined />Inicio</a> },
+    { key: "login", label: <a href="/login"><LoginOutlined />Iniciar Sesión</a> },
+  ];
+  const itemsNavbarLogged: MenuItem[] = [
     { key: "/", label: <a href="/"><HomeOutlined />Inicio</a> },
     { key: "/Exhibition", label: <a href="/Exhibition"><UnorderedListOutlined />Exhibición</a> },
     { key: "/collectInventory", label: <a href="/collectInventory"><AppstoreAddOutlined />Colección</a> },
     { key: "visitorManagement", label: <a href="/visitorManagement"><UsergroupAddOutlined />Gestión de Visitantes</a> },
     { key: "reports", label: <a href="/reports"><FileDoneOutlined />Reportes</a> },
     { key: "artRooms", label: <a href="/artRooms"><AppstoreOutlined />Cuarto de Arte</a> }, 
-    { key: "login", label: <a href="/login"><LoginOutlined />Iniciar Sesión</a> },
+    { key: "logOut", label: <button onClick={logOut}><LoginOutlined />Cerrar Sesion</button> },
     { key: "employees", label: <a href="/employees"><TeamOutlined />Empleados</a> },
   ];
-
   const handleOnClick: MenuProps["onClick"] = (e) => {
     console.log(e);
   };
 
   return (
-    <StyledMenu mode="horizontal" items={itemsNavbar} onClick={handleOnClick} />
+    <StyledMenu mode="horizontal" items={state.user? itemsNavbarLogged: itemsNavbar} onClick={handleOnClick} />
   );
 }
 

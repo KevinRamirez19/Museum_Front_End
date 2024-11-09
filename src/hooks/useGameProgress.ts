@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+
+import myApi from "../assets/lib/axios/myApi";
 
 interface GameProgress {
   gameProgressId: number;
@@ -15,7 +16,7 @@ const useGameProgress = () => {
   useEffect(() => {
     const fetchGameProgress = async () => {
       try {
-        const response = await axios.get("https://nationalmuseum2.somee.com/api/GameProgress");
+        const response = await myApi.get("/GameProgress");
         setGameProgressData(response.data);
       } catch (err) {
         setError((err as Error).message);
