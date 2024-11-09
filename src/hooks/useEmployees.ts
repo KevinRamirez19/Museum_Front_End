@@ -11,30 +11,36 @@ interface User {
 
 interface Employee {
   employeeId: number;
-  user_Id: number;
-  typeEmployee_Id: number;
-  workShedule_Id: number;
-  hiringDate: string;
-  user: User;
+  hireDate: string;
+  workShedule: { workSheduleId: number; workShedule: string };
+  typeEmployee: { typeEmployeeId: number; typeEmployee: string };
+  user: {
+    user_Id: number;
+    names: string;
+    lastNames: string;
+    identificationNumber: string;
+  };
+}
+
+// Definir interfaces 
+interface WorkShedule {
+  workSheduleId: number;
+  workShedule: string;
 }
 
 interface TypeEmployee {
-  typeEmployee_Id: number;
+  typeEmployeeId: number;
   typeEmployee: string;
-}
-
-interface WorkSchedule {
-  workShedule_Id: number;
-  schedule: string;
 }
 
 const useEmployees = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
-  const [typeEmployees, setTypeEmployees] = useState<TypeEmployee[]>([]);
-  const [workSchedules, setWorkSchedules] = useState<WorkSchedule[]>([]);
+  const [workShedule, setWorkShedule] = useState<WorkShedule[]>([]);
+  const [typeEmployee, setTypeEmployee] = useState<TypeEmployee[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Función para obtener los empleados
   const fetchEmployees = async () => {
     try {
       setLoading(true);
@@ -50,60 +56,70 @@ const useEmployees = () => {
       }));
       setEmployees(employeesData);
     } catch (err) {
-      setError("Error al cargar los empleados.");
+      setError("Error al cargar los datos de empleados.");
+      console.error("Error al cargar los datos de empleados:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchTypeEmployees = async () => {
+  // Función para obtener los horarios de trabajo
+  const fetchWorkShedule = async () => {
     try {
       const response = await myApi.get("/typeEmployees");
       setTypeEmployees(response.data);
     } catch (err) {
-      setError("Error al cargar los tipos de empleados.");
+      console.error("Error al cargar los horarios:", err);
     }
   };
 
-  const fetchWorkSchedules = async () => {
+  // Función para obtener los tipos de empleados
+  const fetchTypeEmployees = async () => {
     try {
       const response = await myApi.get("/workSchedules");
       setWorkSchedules(response.data);
     } catch (err) {
-      setError("Error al cargar los horarios de trabajo.");
+      console.error("Error al cargar los tipos de empleados:", err);
     }
   };
 
-  const updateEmployee = async (employee: Employee) => {
+  // Función para actualizar un empleado
+  const updateEmployee = async (updatedEmployee: Employee) => {
     try {
       await myApi.put(`/employees/${employee.employeeId}`, employee);
       await fetchEmployees();
       return true;
     } catch (err) {
+      setError("Error al actualizar el empleado.");
+      console.error("Error al actualizar el empleado:", err);
       return false;
     }
   };
 
+  // Función para eliminar un empleado
   const deleteEmployee = async (employeeId: number) => {
     try {
       await myApi.delete(`/employees/${employeeId}`);
       await fetchEmployees();
       return true;
     } catch (err) {
+      setError("Error al eliminar el empleado.");
+      console.error("Error al eliminar el empleado:", err);
       return false;
     }
   };
 
+  // Cargar datos al montar el hook
   useEffect(() => {
     fetchEmployees();
+    fetchWorkShedule();
     fetchTypeEmployees();
-    fetchWorkSchedules();
   }, []);
 
   return {
     employees,
-    typeEmployees,
-    workSchedules,
+    workShedule,
+    typeEmployee,
     loading,
     error,
     updateEmployee,
