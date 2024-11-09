@@ -4,7 +4,7 @@ import { PieChart, Legend, Pie, Cell, LineChart, Line, XAxis, YAxis, Tooltip, Ca
 import useGameStates from "../../../hooks/useGameStates";
 import useGameProgress from "../../../hooks/useGameProgress";
 import useScenaries from "../../../hooks/useScenary";
-import "./reportesScreen.css";
+import "./ReportesScreen.css";
 
 const COLORS = ["#0088FE", "#FF8042"];
 
