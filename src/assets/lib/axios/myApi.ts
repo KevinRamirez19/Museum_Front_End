@@ -1,6 +1,6 @@
 import axios from "axios";
 
 const myApi = axios.create({
-  baseURL: "https://nationalmuseum2.somee.com/api",
+  baseURL: "https://museumnational.somee.com/api",
 });
 export default myApi;

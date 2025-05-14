@@ -17,17 +17,17 @@ const RegisterForm: React.FC = () => {
 
   useEffect(() => {
     // Obtener Géneros
-    axios.get('https://nationalmuseum2.somee.com/api/Gender')
+    axios.get('https://museumnational.somee.com/api/Gender')
       .then(response => setGenders(response.data))
       .catch(() => message.error("Error al cargar los géneros"));
 
     // Obtener Tipos de Identificación
-    axios.get('https://nationalmuseum2.somee.com/api/IdentificationType')
+    axios.get('https://www.museumnational.somee.com/api/IdentificationType')
       .then(response => setIdentificationTypes(response.data))
       .catch(() => message.error("Error al cargar los tipos de identificación"));
 
     // Obtener Tipos de Usuario
-    axios.get('https://nationalmuseum2.somee.com/api/UserType')
+    axios.get('https://www.museumnational.somee.com/api/UserType')
       .then(response => setUserTypes(response.data))
       .catch(() => message.error("Error al cargar los tipos de usuario"));
   }, []);
@@ -60,7 +60,7 @@ const RegisterForm: React.FC = () => {
   
       console.log('Datos que se van a enviar a la API:', userData);
   
-      const response = await axios.post('https://nationalmuseum2.somee.com/api/User', userData);
+      const response = await axios.post('https://museumnational.somee.com/api/User', userData);
       console.log('Respuesta de la API:', response.data);
       message.success("Registro exitoso");
 

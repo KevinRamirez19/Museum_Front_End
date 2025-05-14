@@ -38,11 +38,12 @@
   background: rgba(255, 255, 255, 0.9);
   padding: 40px;
   border-radius: 15px;
-  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 5px 15px rgba(88, 87, 87, 0.3);
   text-align: center;
   max-width: 400px;
   width: 100%;
   animation: fadeIn 1s ease-out;
+  color: #333; /* Color oscuro para el texto */
 }
 
 /* Resto de estilos (sin cambios) */

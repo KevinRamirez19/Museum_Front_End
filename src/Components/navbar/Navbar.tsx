@@ -5,6 +5,7 @@ import { HomeOutlined, UnorderedListOutlined, AppstoreAddOutlined, UsergroupAddO
 import { useAuth } from "../../Context/AuthContext";
 import { useNavigate } from "react-router-dom";  // Importa useNavigate
 
+
 const StyledMenu = styled(Menu)`
   background-color: #fff;
   border: none;
@@ -41,10 +42,12 @@ function Navbar() {
   const itemsNavbar: MenuItem[] = [
     { key: "/", label: <a href="/"><HomeOutlined />Inicio</a> },
     { key: "login", label: <a href="/login"><LoginOutlined />Iniciar Sesión</a> },
+    {key: "GameMenu", label: <a href="/GameMenu"><UnorderedListOutlined />Menu de Juegos</a> },
+    { key: "/Exhibition", label: <a href="/Exhibition"><UnorderedListOutlined />Exhibición</a> },
   ];
   const itemsNavbarLogged: MenuItem[] = [
     { key: "/", label: <a href="/"><HomeOutlined />Inicio</a> },
-    { key: "/Exhibition", label: <a href="/Exhibition"><UnorderedListOutlined />Exhibición</a> },
+    
     { key: "/collectInventory", label: <a href="/collectInventory"><AppstoreAddOutlined />Colección</a> },
     { key: "visitorManagement", label: <a href="/visitorManagement"><UsergroupAddOutlined />Gestión de Visitantes</a> },
     { key: "reports", label: <a href="/reports"><FileDoneOutlined />Reportes</a> },
@@ -61,5 +64,4 @@ function Navbar() {
     <StyledMenu mode="horizontal" items={state.user ? itemsNavbarLogged : itemsNavbar} onClick={handleOnClick} />
   );
 }
-
 export default Navbar;

@@ -15,7 +15,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-image: url('https://upload.wikimedia.org/wikipedia/commons/1/14/Entrada_Principal_del_Museo_Nacional_de_Colombia.jpg');
+  background-image: url('https://img.freepik.com/vector-gratis/diseno-tecnologico-concepto-ecologia_23-2148438589.jpg?t=st=1745429027~exp=1745432627~hmac=f66121c41916e28d6e2ea6a200263761cc155af7a9cf40664d4f7a250db84127&w=826');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -209,6 +209,7 @@
 /* Contenido de la ventana emergente */
 .modal-content {
   background-color: #fff;
+  color: #333; /* <-- AÑADIDO: color oscuro para el texto */
   padding: 20px;
   border-radius: 8px;
   max-width: 500px;

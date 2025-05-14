@@ -68,7 +68,7 @@ const useArtObjects = () => {
 
   const createArtObject = async (artObject: ArtObjectType) => {
     try {
-      await axios.post('https://nationalmuseum2.somee.com/api/ArtObject', artObject);
+      await axios.post('http://www.museumnational.somee.com/api/ArtObject', artObject);
     } catch (err) {
       setError('Error al crear el objeto de arte');
     }
@@ -76,7 +76,7 @@ const useArtObjects = () => {
 
   const deleteArtObject = async (artObjectId: number) => {
     try {
-      await axios.delete(`https://nationalmuseum2.somee.com/api/ArtObject/${artObjectId}`);
+      await axios.delete(`http://www.museumnational.somee.com/api/ArtObject/${artObjectId}`);
     } catch (err) {
       setError('Error al eliminar el objeto de arte');
     }

@@ -16,6 +16,10 @@ import VisitorManagementScreen from "./Components/screens/visitorManagementScree
 import LoginScreen from "./Components/screens/loginScreen/LoginScreen.tsx";
 import ArtRoomsScreen from "./Components/screens/artRoomsScreen/ArtRoomsScreen.tsx";
 import EmployeesScreen from "./Components/screens/employeesScreen/EmployeesScreen.tsx";
+import GameMenu from "./Components/screens/GameMenu/GameMenu.tsx";
+import TriviaGame from "./Components/screens/GameMenu/TriviaGame.tsx";
+import HangmanGame from "./Components/screens/GameMenu/HangmanGame.tsx";
+import JuegosScreen from "./Components/screens/JuegosScreen/JuegosScreen.tsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -28,7 +32,11 @@ const router = createBrowserRouter(
       <Route path="/login" element={<LoginScreen />} />
       <Route path= "/artRooms" element={<ArtRoomsScreen/>}/>
       <Route path= "/employees" element={<EmployeesScreen/>}/>
-      
+      <Route path="/GameMenu" element={<GameMenu />} />
+      <Route path="/TriviaGame" element={<TriviaGame  />} />
+      <Route path="/HangmanGame" element={<HangmanGame />} />
+      <Route path="/JuegosScreen" element={<JuegosScreen/>} />
+  
     </Route>
   )
 );

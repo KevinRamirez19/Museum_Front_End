@@ -15,35 +15,35 @@ interface ArtRoom {
 const artRooms: ArtRoom[] = [
   {
     nombre: "Visión",
-    descripcion: "Inspirar y preservar el patrimonio cultural de Colombia para promover identidad y diversidad.",
-    resumen: "Colombia sea una sociedad solidaria, respetuosa, que fomente la paz y que reconozca la pluralidad y democracia.",
+    descripcion: "Conectar el alma de nuestras raíces con el pulso del mañana.",
+    resumen: "Soñamos con un espacio donde la herencia cultural de Colombia se preserve, inspire y evolucione, abrazando la tecnología como puente entre generaciones.",
     icon: faEye,
   },
   {
     nombre: "Misión",
-    descripcion: "El Museo Nacional de Colombia evoca los eventos históricos de nuestra nación, preservando y difundiendo su legado cultural.",
-    resumen: "Reconocemos que al Museo Nacional le corresponde la misión de ser un lugar de encuentro...",
+    descripcion: "Hacemos memoria viva en formato digital.",
+    resumen: "Nuestro propósito es narrar la historia de Colombia desde sus voces, territorios y saberes, usando herramientas digitales para preservar, educar y emocionar a quienes se conectan con nuestro legado.",
     icon: faBullseye,
   },
   {
     nombre: "Introducción",
-    descripcion: "Descubre los secretos del pasado en el Museo Nacional de Colombia, un viaje a través de la historia, el arte y la cultura del país.",
+    descripcion: "Tu historia también es parte del museo.",
     resumen: "El Museo Nacional de Colombia es una institución emblemática dedicada a la preservación, investigación...",
     icon: faInfoCircle,
   },
   {
     nombre: "Historia",
     descripcion: "Conoce nuestra travesía a través del tiempo y la evolución cultural de Colombia.",
-    resumen: "El Museo Nacional de Colombia, fundado el 28 de julio de 1823 por la Ley del primer Congreso...",
+    resumen: "Desde tiempos ancestrales hasta la era digital, nuestra historia es una travesía de resistencia, creación y transformación. Este museo celebra esa evolución, trayendo el pasado al presente con nuevas formas de ver y sentir.",
     icon: faHistory,
   },
 ];
 
 const artRoomImages = [
-  { nombre: "Visión", image: "https://www.museonacional.gov.co/el-museo/Documents/vision.jpg" },
-  { nombre: "Misión", image: "https://www.museonacional.gov.co/el-museo/quienes-somos/Documents/mision.jpg" },
-  { nombre: "Introducción", image: "https://www.museonacional.gov.co/el-museo/Documents/renov2.jpg" },
-  { nombre: "Historia", image: "https://concepto.de/wp-content/uploads/2024/05/etnografia-item-8.jpeg" },
+  { nombre: "Visión", image: "https://cdn-icons-png.flaticon.com/512/12238/12238061.png" },
+  { nombre: "Misión", image: "https://www.hidrucol.co/wp-content/uploads/2021/08/Mision-de-una-empresaa.png" },
+  { nombre: "Introducción", image: "https://eleternoestudiante.com/wp-content/uploads/2019/01/libro-abierto-1431370101895.jpg" },
+  { nombre: "Historia", image: "https://www.unir.net/wp-content/uploads/2021/11/cabecerahistoriografia-min.jpg" },
 ];
 
 const artRoomsXImage = artRooms.map((artRoom) => ({
@@ -67,7 +67,7 @@ const HomeScreen: React.FC = () => {
   return (
     <div className="home-screen">
       <div className="welcome-section">
-        <h1 className="welcome-title">BIENVENIDOS AL MUSEO NACIONAL</h1>
+        <h1 className="welcome-title">RAICES DIGITALES</h1>
         <p className="welcome-subtitle">
           Explora la historia y cultura de nuestra nación, revive épocas pasadas y sumérgete en el patrimonio de Colombia.
         </p>
