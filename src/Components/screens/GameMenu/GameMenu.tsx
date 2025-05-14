@@ -57,7 +57,7 @@ const GameMenu: React.FC = () => {
           </motion.div>
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Link to="/HangmanGame" className="game-button">
-              <span className="icon"><FaGamepad /></span> Ahorcado
+              <span className="icon"><FaGamepad /></span> Ahorcado 
             </Link>
           </motion.div>
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
