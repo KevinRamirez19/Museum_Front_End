@@ -1,8 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { FaQuestion, FaGamepad, FaUserSecret, FaSun, FaMoon } from 'react-icons/fa';
+import { FaQuestion, FaGamepad, FaUserSecret,} from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import './GameMenu.css';
+import { WiNightClear } from 'react-icons/wi';
+import { WiDaySunny } from 'react-icons/wi';
+
+
+;
+
 
 const GameMenu: React.FC = () => {
   const [darkMode, setDarkMode] = useState(false);
@@ -39,7 +45,7 @@ const GameMenu: React.FC = () => {
       <div className={`game-menu ${darkMode ? 'dark' : 'light'}`}>
         <div className="theme-toggle">
           <button onClick={toggleTheme} className="toggle-button">
-            {darkMode ? <FaSun /> : <FaMoon />}
+            {darkMode ? <WiDaySunny /> : <WiNightClear />}
           </button>
         </div>
         <h2 className="menu-title">Seleccione un Juego</h2>
